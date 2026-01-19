@@ -15,6 +15,7 @@ export default function Terminal() {
     ship: { power: 85, oxygen: 90, hull: 75, cryo: 95 },
     timeDilatation: { subjectiveTime: 100, timeScale: 1.0, maxSubjectiveTime: 100 },
     inventory: { items: [], maxSlots: 10 },
+    credits: 1000, // Starting credits (future: Solana token)
     gameTime: 0,
     isRunning: true,
   });

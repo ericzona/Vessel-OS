@@ -14,6 +14,7 @@ export interface GameState {
   ship: ShipSystems;
   timeDilatation: TimeDilatationState;
   inventory: InventoryState;
+  credits: number; // In-game currency (future: Solana token integration)
   gameTime: number; // Total elapsed game ticks
   isRunning: boolean;
 }
@@ -48,6 +49,35 @@ export interface CommandResult {
   success: boolean;
   message: string;
   updates?: Partial<GameState>;
+}
+
+/**
+ * Command Interface - Registry Pattern
+ * All commands must implement this interface for dynamic loading
+ */
+export interface Command {
+  name: string;
+  aliases?: string[];
+  description: string;
+  usage: string;
+  category: CommandCategory;
+  execute(args: string[], context: CommandContext): CommandResult | Promise<CommandResult>;
+}
+
+export enum CommandCategory {
+  SYSTEM = "system",
+  NAVIGATION = "navigation",
+  SHIP = "ship",
+  TIME = "time",
+  INVENTORY = "inventory",
+  CREW = "crew",
+  UTILITY = "utility",
+}
+
+export interface CommandContext {
+  gameState: GameState;
+  shipHeartbeat: any; // Will be typed properly when refactored
+  timeDilatation: any; // Will be typed properly when refactored
 }
 
 export interface TerminalMessage {

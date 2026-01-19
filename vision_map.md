@@ -131,12 +131,18 @@ graph LR
 - Core project structure (README, .clinerules, documentation framework)
 - Active Context tracking system
 - Vision Map initialization
+- Terminal Emulator Component (with command history)
+- Ship-Heartbeat Engine (tick-based degradation)
+- Time Dilatation System (subjective time resource)
+- Command Registry Pattern (dynamic loading)
+- Repair Command (subjective time → ship repair)
+- Credits System (Solana integration foundation)
+- Lootopian Character System (NFT-ready layers)
 
-### 🔨 In Progress (Layer 1: Foundation)
-- Terminal Emulator Component
-- MUSH Command Parser
-- Ship-Heartbeat Engine
-- Time Dilatation System
+### 🔨 In Progress (Layer 2: Command Expansion)
+- Command Registry with status, repair, help
+- MVP Gameplay Loop (monitor → repair → manage time)
+- Character layering system (Base, Clothing, Accessory, Special)
 
 ### 📋 Planned (Layer 2: Economy)
 - Growth/Crafting System

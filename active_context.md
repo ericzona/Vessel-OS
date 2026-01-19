@@ -9,16 +9,26 @@
 
 ## Current Focus
 
-**Phase: Core Initialization - "The Silent Ship Awakens"**
+**Phase: MVP - "Command Expansion & Playable Loop"**
 
-We are bootstrapping the foundation of a MUSH-inspired, text-based exploration game. The player awakens in a ship traveling through the void after "The Great Crash," with the mission to reach a distant Galaxy through resource management, repair, and "growth" mechanics.
+We've moved into the Command Registry Pattern implementation, creating a minimal viable gameplay loop. Players can now monitor degrading ship systems and repair them using subjective time as currency.
 
-### Active Development Circle
+### Active Development Circle - Layer 2
 
-1. **Terminal Emulator UI** - A Next.js-based retro terminal interface for player interaction
-2. **Ship-Heartbeat Engine** - A TypeScript simulation loop that monitors ship systems (power, life support, engine integrity)
-3. **MUSH Command Parser** - Text-based command interpreter (e.g., `grow seed`, `repair engine`, `check cryo`)
-4. **Time Dilatation System** - A player resource mechanic based on relativistic time as a currency/constraint
+1. **Command Registry Pattern** - Modular command system with dynamic loading from /engine/commands
+2. **Repair Economy** - Subjective time as currency for ship repairs (10 units = 15% repair)
+3. **Credits System** - Foundation for future Solana token integration
+4. **Lootopian Character System** - NFT-ready layered character composition (Base, Clothing, Accessory, Special)
+
+### Playable MVP Loop
+
+**The Core Gameplay:**
+1. Ship systems degrade constantly (power, oxygen, hull, cryo)
+2. Player types `status` to monitor degradation
+3. Player types `repair <system>` to fix using subjective time
+4. Subjective time recharges at normal time scale
+5. Managing time vs repairs creates strategic tension
+
 
 ---
 

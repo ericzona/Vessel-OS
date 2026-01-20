@@ -1,6 +1,8 @@
 # Vessel-OS Constitution v1.0
 
-**The Great Transit - Pioneer DAO Governance Framework**
+## Title
+
+- **The Great Transit - Pioneer DAO Governance Framework**
 
 ---
 
@@ -31,6 +33,7 @@ We, the Pioneers of The Great Transit, establish this Constitution to govern our
 **$SCRAP** is the native resource token of The Great Transit. It represents salvaged materials, refined from the void itself, used to maintain and repair the Pioneer vessels.
 
 **Properties:**
+
 - **Type:** Fungible utility token (future: SPL token on Solana)
 - **Supply:** Generated through mining (player action)
 - **Utility:** Required for ship repairs, upgrades, and crafting
@@ -39,6 +42,7 @@ We, the Pioneers of The Great Transit, establish this Constitution to govern our
 ### Section 2.2: Mining Rights
 
 All Pioneers have the right to mine the void for $SCRAP. Mining is achieved through:
+
 - Time investment (subjective time units)
 - Skill-based mechanics (future: mini-games, puzzles)
 - Exploration of anomalies (random events)
@@ -49,6 +53,7 @@ All Pioneers have the right to mine the void for $SCRAP. Mining is achieved thro
 ### Section 2.3: Economic Balance
 
 The $SCRAP economy is designed with:
+
 - **Burn Mechanism:** Repairs consume $SCRAP permanently
 - **Earn Mechanism:** Mining generates new $SCRAP
 - **Scarcity:** Limited mining actions per time period (via subjective time)
@@ -63,6 +68,7 @@ The $SCRAP economy is designed with:
 **Definition:** Legacy Holders are players who participated in the alpha/beta phases before token launch.
 
 **Rights Guaranteed:**
+
 1. **Airdrop Priority** - Legacy holders receive proportional $SCRAP tokens upon mainnet launch
 2. **Founder NFTs** - Special "Pioneer Badge" NFTs granted to early participants
 3. **Governance Weight** - Legacy holders receive enhanced voting power in Pioneer DAO decisions
@@ -71,6 +77,7 @@ The $SCRAP economy is designed with:
 ### Section 3.2: Retroactive Distribution
 
 Upon token launch, the Shadow Ledger (in-game activity log) will be analyzed to determine:
+
 - Total $SCRAP earned through gameplay
 - Total $SCRAP spent on repairs/upgrades
 - Net contribution to community (helping other players)
@@ -89,6 +96,7 @@ This ensures early players who invested time are rewarded fairly.
 The **Pioneer DAO** is the decentralized governance body for The Great Transit ecosystem.
 
 **Powers:**
+
 - Approve game mechanics changes
 - Adjust economic parameters ($SCRAP burn/earn rates)
 - Vote on story/mission additions
@@ -109,6 +117,15 @@ The **Pioneer DAO** is the decentralized governance body for The Great Transit e
 4. **Execution** - 51% majority required for passage
 5. **Implementation** - Dev team executes within 30 days
 
+### Section 4.4: The Sovereign Economy
+
+New Revenue Distribution Model:
+
+- 5% Treasury Vault: For DAO-voted "Major Ship Upgrades" and core dev.
+- 5% Marketing Vault: For $SCRAP memecoin raids and PFP awareness.
+- 2.5% Builder Reward: Distributed to players whose "Worlds/Shops" maintain high "Subjective Time" dwell-rates (Engagement rewards).
+- 2.5% Garbage Collector: Funds the "Ship AI" to clean up idle assets and return them to the Treasury.
+
 ---
 
 ## Article V: The Shadow Ledger
@@ -116,6 +133,7 @@ The **Pioneer DAO** is the decentralized governance body for The Great Transit e
 ### Section 5.1: Purpose
 
 The **Shadow Ledger** is an in-game database tracking all economic activity before token launch. This ensures:
+
 - Fair distribution when $SCRAP becomes a blockchain token
 - Audit trail for airdrop calculations
 - Community transparency
@@ -146,6 +164,7 @@ The **Shadow Ledger** is an in-game database tracking all economic activity befo
 ### Section 6.1: Deflationary Design
 
 The Great Transit economy is **deflationary by design**:
+
 - Ship systems degrade constantly (creates demand)
 - Repairs burn $SCRAP permanently (reduces supply)
 - Mining has time cost (limits generation rate)
@@ -154,6 +173,7 @@ The Great Transit economy is **deflationary by design**:
 ### Section 6.2: Treasury Allocation
 
 Upon token launch, a **Community Treasury** will be established:
+
 - 10% of initial token supply
 - Controlled by Pioneer DAO votes
 - Used for: development bounties, marketing, partnerships
@@ -166,6 +186,7 @@ Upon token launch, a **Community Treasury** will be established:
 ### Section 7.1: Freedom of Play
 
 All Pioneers have the right to:
+
 - Play at their own pace (no forced time pressure)
 - Choose their strategy (mining vs. trading vs. exploration)
 - Exit the game at any time with full $SCRAP balance intact
@@ -174,6 +195,7 @@ All Pioneers have the right to:
 ### Section 7.2: Anti-Exploitation
 
 Players are protected against:
+
 - Developer rug-pulls (community-controlled treasury)
 - Pay-to-win mechanics (no real-money $SCRAP purchases)
 - Unfair advantages (no premium features behind paywalls)
@@ -184,12 +206,14 @@ Players are protected against:
 ## Article VIII: Amendments
 
 This Constitution can be amended through:
+
 1. Pioneer DAO proposal (as per Article IV)
 2. 66% supermajority vote required
 3. 14-day discussion + voting period
 4. Automatic implementation upon passage
 
 **Immutable Principles:**
+
 - The Right of Return (Article III) cannot be revoked
 - Economic transparency (Article V) cannot be removed
 - Player rights (Article VII) cannot be diminished
@@ -199,6 +223,7 @@ This Constitution can be amended through:
 ## Article IX: Dissolution Clause
 
 If The Great Transit project must end:
+
 1. All Shadow Ledger data released to community
 2. $SCRAP token ownership transferred to Pioneer DAO
 3. Source code open-sourced under MIT license
@@ -229,6 +254,8 @@ If The Great Transit project must end:
 
 ---
 
-**END OF CONSTITUTION**
+## END OF CONSTITUTION
 
-*"In the void, we are equals. In the Galaxy, we are legends."*
+### Quote
+
+- *"In the void, we are equals. In the Galaxy, we are legends."*

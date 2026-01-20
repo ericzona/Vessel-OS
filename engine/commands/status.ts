@@ -4,6 +4,7 @@
  */
 
 import { Command, CommandResult, CommandContext, CommandCategory } from "@/types/game.types";
+import { getPioneerSummary } from "@/engine/pioneer-generator";
 
 export const StatusCommand: Command = {
   name: "status",
@@ -38,11 +39,15 @@ STATUS: ${health > 75 ? "NOMINAL" : health > 50 ? "DEGRADED" : health > 25 ? "CR
 ───────────────────────────────────────────────────────────
 
 💡 PRE-CRASH PIONEER LOG:
-"You are Pioneer #1 of 2,847. The Great Crash during departure from 
+"You are Pioneer #${gameState.character.pioneerNumber} of 2,847. The Great Crash during departure from 
 Lootopian orbit scattered the fleet. Most crew remain in cryo-sleep. 
 Your mission: keep the ship alive until you reach the new galaxy. 
 The journey requires subjective time manipulation—one Pioneer, awake 
 for centuries, aging slowly while others dream of a new world."
+
+───────────────────────────────────────────────────────────
+
+${getPioneerSummary(gameState.character.pioneerManifest)}
     `.trim();
 
     return {

@@ -5,6 +5,7 @@ import { TerminalMessage, MessageType, GameState } from "@/types/game.types";
 import { ShipHeartbeat } from "@/engine/ship-heartbeat";
 import { TimeDilatationManager } from "@/engine/time-dilatation";
 import { CommandParser } from "@/engine/command-parser";
+import { generatePioneerManifest } from "@/engine/pioneer-generator";
 
 export default function Terminal() {
   const [messages, setMessages] = useState<TerminalMessage[]>([]);
@@ -15,6 +16,7 @@ export default function Terminal() {
     character: {
       name: "Pioneer",
       id: "pioneer-001",
+      pioneerManifest: generatePioneerManifest("pioneer-001", 0), // Gen 0 = Pre-Crash OG
       lootManifest: [
         { id: "suit-01", name: "Tattered Flight Suit", description: "Standard issue Pioneer gear, worn from years in cryo", rarity: "common", category: "clothing" },
         { id: "badge-01", name: "Old-World PFP Badge", description: "A faded digital badge from Lootopia's golden age", rarity: "uncommon", category: "badge" },
@@ -27,7 +29,20 @@ export default function Terminal() {
     ship: { power: 85, oxygen: 90, hull: 75, cryo: 95, scrap: 50 },
     timeDilatation: { subjectiveTime: 100, timeScale: 1.0, maxSubjectiveTime: 100 },
     inventory: { items: [], maxSlots: 10 },
-    credits: 1000, // Starting credits (future: Solana token)
+    credits: 0, // Chip Credits (exchanged from $SOL)
+    scrapBalance: 50, // Player's $SCRAP balance
+    sovereignVaults: {
+      treasury: 0,
+      marketing: 0,
+      builderRewards: 0,
+      garbageCollector: 0,
+    },
+    compartmentOwnership: [
+      { compartmentId: "cryoBay", ownerId: null, claimCost: 100, isLocked: false, vendingMachine: null },
+      { compartmentId: "engineering", ownerId: null, claimCost: 150, isLocked: false, vendingMachine: null },
+      { compartmentId: "bridge", ownerId: null, claimCost: 200, isLocked: false, vendingMachine: null },
+      { compartmentId: "cargoHold", ownerId: null, claimCost: 125, isLocked: false, vendingMachine: null },
+    ],
     gameTime: 0,
     isRunning: true,
   });

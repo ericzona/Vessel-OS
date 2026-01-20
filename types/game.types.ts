@@ -14,6 +14,7 @@ export interface ShipSystems {
 export interface Character {
   name: string;
   id: string; // Unique identifier
+  pioneerManifest: import("@/types/pioneer.types").PioneerManifest; // Pre-Crash DNA
   lootManifest: LootItem[]; // Lootopian gear/items
   founderBadge: boolean; // Legacy holder status
   pioneerNumber: number; // Position in crew manifest (1-2847)
@@ -30,13 +31,40 @@ export interface LootItem {
 
 export type CompartmentId = "cryoBay" | "engineering" | "bridge" | "cargoHold";
 
+export interface VendingMachine {
+  id: string;
+  ownerId: string; // Character who placed it
+  compartmentId: CompartmentId;
+  itemType: ItemType;
+  price: number; // In $SCRAP
+  stock: number;
+}
+
+export interface CompartmentOwnership {
+  compartmentId: CompartmentId;
+  ownerId: string | null; // Character who claimed it
+  claimCost: number; // $SCRAP cost to claim
+  isLocked: boolean;
+  vendingMachine: VendingMachine | null;
+}
+
+export interface SovereignVaults {
+  treasury: number; // 5% of all transactions
+  marketing: number; // 5% of all transactions
+  builderRewards: number; // 2.5% of all transactions
+  garbageCollector: number; // 2.5% of all transactions (inactive cleanup fund)
+}
+
 export interface GameState {
   character: Character;
   currentLocation: CompartmentId;
   ship: ShipSystems;
   timeDilatation: TimeDilatationState;
   inventory: InventoryState;
-  credits: number; // In-game currency (future: Solana token integration)
+  credits: number; // Chip Credits (future: exchanged from $SOL)
+  scrapBalance: number; // Player's $SCRAP balance
+  sovereignVaults: SovereignVaults; // 15% Sovereign Fee allocation
+  compartmentOwnership: CompartmentOwnership[]; // World Lock system
   gameTime: number; // Total elapsed game ticks
   isRunning: boolean;
 }

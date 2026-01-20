@@ -62,8 +62,26 @@ Wait at normal time scale to recharge, or use 'time normal' command.`,
       subjectiveTime: newSubjectiveTime,
     };
 
-    // Perform repair
+    // Perform repair with 15% Sovereign Fee deduction
     const REPAIR_AMOUNT = 15;
+    
+    // Calculate 15% Sovereign Fee distribution
+    const SOVEREIGN_FEE_RATE = 0.15;
+    const sovereignFee = REPAIR_COST * SOVEREIGN_FEE_RATE;
+    const netRepairCost = REPAIR_COST - sovereignFee;
+    
+    // Distribute to vaults
+    const treasuryShare = sovereignFee * (5 / 15); // 5% of total
+    const marketingShare = sovereignFee * (5 / 15); // 5% of total
+    const builderShare = sovereignFee * (2.5 / 15); // 2.5% of total
+    const gcShare = sovereignFee * (2.5 / 15); // 2.5% of total (Garbage Collector)
+    
+    // Update sovereign vaults
+    gameState.sovereignVaults.treasury += treasuryShare;
+    gameState.sovereignVaults.marketing += marketingShare;
+    gameState.sovereignVaults.builderRewards += builderShare;
+    gameState.sovereignVaults.garbageCollector += gcShare;
+    
     shipHeartbeat.repair(system as any, REPAIR_AMOUNT);
     
     const systems = shipHeartbeat.getSystems();
@@ -75,9 +93,16 @@ Wait at normal time scale to recharge, or use 'time normal' command.`,
 
 ⚙️  Subjective time consumed: ${REPAIR_COST} units
 ➤  Remaining: ${newSubjectiveTime.toFixed(1)} units
+📊  Sovereign Fee (15%): ${sovereignFee.toFixed(1)} units allocated to vaults
 
 ✓  ${system.toUpperCase()} restored: +${REPAIR_AMOUNT}%
 ➤  Current integrity: ${currentValue.toFixed(1)}%
+
+[SOVEREIGN FEE DISTRIBUTION]
+• Treasury: +${treasuryShare.toFixed(2)} (5%)
+• Marketing: +${marketingShare.toFixed(2)} (5%)
+• Builder Rewards: +${builderShare.toFixed(2)} (2.5%)
+• Garbage Collector: +${gcShare.toFixed(2)} (2.5%)
 
 Time flows differently when you focus on a single task.
 The ship responds to your attention.`,

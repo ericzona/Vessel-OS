@@ -8,6 +8,7 @@ export interface ShipSystems {
   oxygen: number; // 0-100
   hull: number; // 0-100
   cryo: number; // 0-100
+  scrap: number; // $SCRAP resource (mining/repair currency)
 }
 
 export interface GameState {

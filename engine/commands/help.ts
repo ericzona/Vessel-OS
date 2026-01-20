@@ -24,6 +24,16 @@ SHIP OPERATIONS:
   
 AVAILABLE SYSTEMS:  power, oxygen, hull, cryo
 
+RESOURCE MANAGEMENT:
+  mine                - Mine the void for $SCRAP (costs 20 subjective time)
+                       Yields 1-5 $SCRAP randomly
+                       Aliases: dig, extract
+
+EXPLORATION:
+  look                - Examine your current location
+                       Discover lore fragments about the Great Crash
+                       Aliases: l, examine, inspect
+
 TIME MANIPULATION:
   time <mode>         - Adjust time scale (slow/normal/fast)
                        Normal speed recharges subjective time
@@ -35,11 +45,13 @@ UTILITY:
 
 GAMEPLAY LOOP:
 1. Monitor ship systems with 'status'
-2. Use 'repair <system>' to fix degrading systems
-3. Repairs cost subjective time (recharges at normal speed)
-4. Manage time flow to balance repairs and recharge
+2. Mine $SCRAP resources with 'mine' (costs subjective time)
+3. Use 'repair <system>' to fix degrading systems
+4. Subjective time recharges at 1 unit/sec (normal speed)
+5. Manage time vs repairs vs mining to survive
 
 Your ship degrades constantly. Keep systems above 0% to survive.
+$SCRAP is the future currency for upgrades and crafting.
     `.trim();
 
     return {

@@ -12,7 +12,7 @@ export default function Terminal() {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [gameState, setGameState] = useState<GameState>({
-    ship: { power: 85, oxygen: 90, hull: 75, cryo: 95 },
+    ship: { power: 85, oxygen: 90, hull: 75, cryo: 95, scrap: 50 },
     timeDilatation: { subjectiveTime: 100, timeScale: 1.0, maxSubjectiveTime: 100 },
     inventory: { items: [], maxSlots: 10 },
     credits: 1000, // Starting credits (future: Solana token)
@@ -22,6 +22,7 @@ export default function Terminal() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const lastAlertsRef = useRef<Set<string>>(new Set());
   
   // Initialize game engines
   const shipHeartbeat = useRef<ShipHeartbeat>(new ShipHeartbeat(gameState.ship));
@@ -70,10 +71,17 @@ Type 'status' to check ship systems.
         gameTime: prev.gameTime + 1,
       }));
       
-      // Display alerts
+      // Display alerts only if they're new (prevent duplicate spam)
+      const currentAlerts = new Set(alerts);
       alerts.forEach((alert) => {
-        addMessage(alert, MessageType.WARNING);
+        // Only add alert if it's not in the last batch of alerts
+        if (!lastAlertsRef.current.has(alert)) {
+          addMessage(alert, MessageType.WARNING);
+        }
       });
+      
+      // Update the last alerts set
+      lastAlertsRef.current = currentAlerts;
     });
 
     // Focus input

@@ -32,6 +32,7 @@ export class ShipHeartbeat {
       oxygen: initialSystems?.oxygen ?? 100,
       hull: initialSystems?.hull ?? 100,
       cryo: initialSystems?.cryo ?? 100,
+      scrap: initialSystems?.scrap ?? 50, // Starting $SCRAP balance
     };
   }
 

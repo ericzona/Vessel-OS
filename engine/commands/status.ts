@@ -34,6 +34,15 @@ OVERALL HEALTH: ${health.toFixed(1)}%
 GAME TIME: ${gameState.gameTime} ticks
 
 STATUS: ${health > 75 ? "NOMINAL" : health > 50 ? "DEGRADED" : health > 25 ? "CRITICAL" : "EMERGENCY"}
+
+───────────────────────────────────────────────────────────
+
+💡 PRE-CRASH PIONEER LOG:
+"You are Pioneer #1 of 2,847. The Great Crash during departure from 
+Lootopian orbit scattered the fleet. Most crew remain in cryo-sleep. 
+Your mission: keep the ship alive until you reach the new galaxy. 
+The journey requires subjective time manipulation—one Pioneer, awake 
+for centuries, aging slowly while others dream of a new world."
     `.trim();
 
     return {

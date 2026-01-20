@@ -12,6 +12,18 @@ export default function Terminal() {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [gameState, setGameState] = useState<GameState>({
+    character: {
+      name: "Pioneer",
+      id: "pioneer-001",
+      lootManifest: [
+        { id: "suit-01", name: "Tattered Flight Suit", description: "Standard issue Pioneer gear, worn from years in cryo", rarity: "common", category: "clothing" },
+        { id: "badge-01", name: "Old-World PFP Badge", description: "A faded digital badge from Lootopia's golden age", rarity: "uncommon", category: "badge" },
+      ],
+      founderBadge: false, // Set to true for legacy holders
+      pioneerNumber: 1,
+      awakeningTime: Date.now(),
+    },
+    currentLocation: "cryoBay",
     ship: { power: 85, oxygen: 90, hull: 75, cryo: 95, scrap: 50 },
     timeDilatation: { subjectiveTime: 100, timeScale: 1.0, maxSubjectiveTime: 100 },
     inventory: { items: [], maxSlots: 10 },

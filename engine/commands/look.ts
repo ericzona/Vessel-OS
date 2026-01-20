@@ -82,15 +82,34 @@ export const LookCommand: Command = {
   category: CommandCategory.NAVIGATION,
 
   execute(args: string[], context: CommandContext): CommandResult {
-    // Default to cryo-bay as starting location
-    // In a full implementation, this would come from gameState.currentLocation
-    const currentLocation: CompartmentKey = "cryoBay";
+    const { gameState } = context;
     
+    const currentLocation = gameState.currentLocation as CompartmentKey;
     const location = COMPARTMENTS[currentLocation];
 
     const formattedExits = location.exits
       .map(exit => exit.replace(/-/g, ' ').toUpperCase())
       .join(", ");
+
+    // Check for founder badge - unlock Captain's Log on Bridge
+    const hasFounderBadge = gameState.character.founderBadge;
+    const isBridge = currentLocation === "bridge";
+    
+    let captainsLog = "";
+    if (isBridge && hasFounderBadge) {
+      captainsLog = `
+
+🔓 FOUNDER ACCESS GRANTED
+
+[CAPTAIN'S LOG - CLASSIFIED]
+"To those who supported us from the beginning: You are the reason
+this journey exists. The Lootopian legacy lives through you. When
+we reach the new galaxy, your names will be etched in the Foundation
+Stone. Pioneer #1 of the first generation. Thank you."
+- Captain Vess, Final Entry
+
+[COORDINATES UNLOCKED: Hidden sector accessible to Legacy Holders]`;
+    }
 
     const output = `
 ╔════════════════════════════════════════════════════════════╗
@@ -105,9 +124,9 @@ ${location.description}
 
 ───────────────────────────────────────────────────────────
 
-Obvious exits: ${formattedExits}
+Obvious exits: ${formattedExits}${captainsLog}
 
-[Navigation commands coming soon: 'go <direction>']
+Use 'move <destination>' to navigate. (Costs 1 subjective time)
     `.trim();
 
     return {

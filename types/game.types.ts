@@ -11,7 +11,28 @@ export interface ShipSystems {
   scrap: number; // $SCRAP resource (mining/repair currency)
 }
 
+export interface Character {
+  name: string;
+  id: string; // Unique identifier
+  lootManifest: LootItem[]; // Lootopian gear/items
+  founderBadge: boolean; // Legacy holder status
+  pioneerNumber: number; // Position in crew manifest (1-2847)
+  awakeningTime: number; // When player first woke from cryo
+}
+
+export interface LootItem {
+  id: string;
+  name: string;
+  description: string;
+  rarity: "common" | "uncommon" | "rare" | "legendary";
+  category: "clothing" | "accessory" | "badge" | "tool";
+}
+
+export type CompartmentId = "cryoBay" | "engineering" | "bridge" | "cargoHold";
+
 export interface GameState {
+  character: Character;
+  currentLocation: CompartmentId;
   ship: ShipSystems;
   timeDilatation: TimeDilatationState;
   inventory: InventoryState;

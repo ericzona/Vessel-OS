@@ -9,13 +9,15 @@
 
 ## Current Focus
 
-**Phase: MVP COMPLETE - "Playable Foundation"**
+**Phase 1: THE NAVIGABLE SHIP - COMPLETE** 🚀
 
-✅ **MILESTONE ACHIEVED:** The Great Transit MVP is fully functional and playable!
+✅ **MILESTONE ACHIEVED:** Spatial navigation with "Wait" mechanic implemented!
+
+**Budget Tracking:** ~$8.50/25.00 spent (34% utilized)
 
 The core gameplay loop is implemented and tested. Players can monitor their degrading ship systems and make strategic decisions about using subjective time as a currency for repairs.
 
-### Completed MVP Features - Layer 1
+### Completed Features - Layer 1 (Spiral: Foundation + Spatial)
 
 1. **Command Registry Pattern** ✅ - Modular command system with dynamic loading from /engine/commands
 2. **Repair Economy** ✅ - Subjective time as currency for ship repairs (10 units = 15% repair)
@@ -26,6 +28,12 @@ The core gameplay loop is implemented and tested. Players can monitor their degr
 7. **Ship-Heartbeat Engine** ✅ - Real-time degradation simulation (1-second ticks)
 8. **Time Dilatation Manager** ✅ - Subjective time resource system
 9. **Constitution & Governance** ✅ - Complete DAO framework and economic design document
+10. **Character System** ✅ - Lootopian character with manifest and founder badge support
+11. **Spatial Navigation** ✅ - MUSH-style movement between 4 compartments with time cost
+12. **Dynamic Look Command** ✅ - Location-aware descriptions with founder badge unlocks
+13. **Save System Foundation** ✅ - localStorage persistence (ready for integration)
+14. **Vercel Deployment Guide** ✅ - Complete hosting documentation
+15. **Asset Structure** ✅ - Placeholder folders for future IPFS integration
 
 ### Playable MVP Loop (TESTED & WORKING)
 
@@ -38,9 +46,11 @@ The core gameplay loop is implemented and tested. Players can monitor their degr
 6. Warning alerts appear when systems reach critical thresholds
 
 **Available Commands:**
-- `status` - Full ship status report with visual bars
+- `status` - Full ship status report with visual bars + Pioneer lore
 - `repair <system>` - Repair power/oxygen/hull/cryo (costs 10 subjective time)
-- `mine` - Mine the void for $SCRAP resources (costs 20 subjective time, yields 1-5 $SCRAP)
+- `mine` - Mine the void for $SCRAP (costs 20 subjective time, 15% lore discovery chance)
+- `move <destination>` - Navigate ship compartments (costs 1 subjective time - "Wait" mechanic)
+- `look` - Examine current location, founder badge unlocks Captain's Log on bridge
 - `help` - Display all available commands and gameplay loop
 
 

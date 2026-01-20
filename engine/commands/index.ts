@@ -7,6 +7,7 @@ import { Command } from "@/types/game.types";
 import { StatusCommand } from "./status";
 import { RepairCommand } from "./repair";
 import { MineCommand } from "./mine";
+import { MoveCommand } from "./move";
 import { LookCommand } from "./look";
 import { HelpCommand } from "./help";
 
@@ -18,6 +19,7 @@ export const COMMAND_REGISTRY: Command[] = [
   StatusCommand,
   RepairCommand,
   MineCommand,
+  MoveCommand,
   LookCommand,
   HelpCommand,
 ];

@@ -29,10 +29,13 @@ RESOURCE MANAGEMENT:
                        Yields 1-5 $SCRAP randomly
                        Aliases: dig, extract
 
-EXPLORATION:
+EXPLORATION & NAVIGATION:
   look                - Examine your current location
                        Discover lore fragments about the Great Crash
                        Aliases: l, examine, inspect
+  move <destination>  - Navigate between compartments (costs 1 subjective time)
+                       Aliases: go, travel, walk
+                       The ship is vast - movement takes time
 
 TIME MANIPULATION:
   time <mode>         - Adjust time scale (slow/normal/fast)

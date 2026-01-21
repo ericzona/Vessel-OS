@@ -1,18 +1,23 @@
-"use client";
-
 import Terminal from "@/components/Terminal";
-import PioneerHUD from "@/components/PioneerHUD";
-import { generatePioneerManifest } from "@/engine/pioneer-generator";
+import dynamic from "next/dynamic";
+
+// Load PioneerHUD client-side only to avoid hydration issues
+const PioneerHUDWrapper = dynamic(() => import("@/components/PioneerHUD").then(mod => {
+  const { generatePioneerManifest } = require("@/engine/pioneer-generator");
+  const manifest = generatePioneerManifest("pioneer-001", 0);
+  
+  return () => {
+    const PioneerHUD = mod.default;
+    return <PioneerHUD manifest={manifest} size={100} />;
+  };
+}), { ssr: false });
 
 export default function Home() {
-  // Generate a sample pioneer manifest for the HUD
-  const sampleManifest = generatePioneerManifest("pioneer-001", 0);
-  
   return (
     <main className="min-h-screen bg-terminal-bg flex items-center justify-center p-4 relative">
-      {/* Pioneer HUD - Top Left */}
+      {/* Pioneer HUD - Top Left (Client-side only) */}
       <div className="absolute top-4 left-4 z-10">
-        <PioneerHUD manifest={sampleManifest} size={100} />
+        <PioneerHUDWrapper />
       </div>
       
       <Terminal />

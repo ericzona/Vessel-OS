@@ -5,6 +5,7 @@
 
 import { Command, CommandResult, CommandContext, CommandCategory } from "@/types/game.types";
 import { getPioneerSummary } from "@/engine/pioneer-generator";
+import { formatCharacterLoot } from "@/types/loot.types";
 
 export const StatusCommand: Command = {
   name: "status",
@@ -48,6 +49,10 @@ for centuries, aging slowly while others dream of a new world."
 ───────────────────────────────────────────────────────────
 
 ${getPioneerSummary(gameState.character.pioneerManifest)}
+
+───────────────────────────────────────────────────────────
+
+${formatCharacterLoot(gameState.character.characterLoot)}
     `.trim();
 
     return {

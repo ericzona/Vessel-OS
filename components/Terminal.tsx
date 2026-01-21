@@ -6,6 +6,7 @@ import { ShipHeartbeat } from "@/engine/ship-heartbeat";
 import { TimeDilatationManager } from "@/engine/time-dilatation";
 import { CommandParser } from "@/engine/command-parser";
 import { generatePioneerManifest } from "@/engine/pioneer-generator";
+import { generateCharacterLoot } from "@/types/loot.types";
 
 export default function Terminal() {
   const [messages, setMessages] = useState<TerminalMessage[]>([]);
@@ -17,6 +18,7 @@ export default function Terminal() {
       name: "Pioneer",
       id: "pioneer-001",
       pioneerManifest: generatePioneerManifest("pioneer-001", 0), // Gen 0 = Pre-Crash OG
+      characterLoot: generateCharacterLoot(), // Random traits "Gerant the Scholar" style
       lootManifest: [
         { id: "suit-01", name: "Tattered Flight Suit", description: "Standard issue Pioneer gear, worn from years in cryo", rarity: "common", category: "clothing" },
         { id: "badge-01", name: "Old-World PFP Badge", description: "A faded digital badge from Lootopia's golden age", rarity: "uncommon", category: "badge" },

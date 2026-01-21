@@ -9,6 +9,7 @@ import { RepairCommand } from "./repair";
 import { MineCommand } from "./mine";
 import { MoveCommand } from "./move";
 import { LookCommand } from "./look";
+import { TalkCommand } from "./talk";
 import { FeedbackCommand } from "./feedback";
 import { HelpCommand } from "./help";
 
@@ -22,6 +23,7 @@ export const COMMAND_REGISTRY: Command[] = [
   MineCommand,
   MoveCommand,
   LookCommand,
+  TalkCommand,
   FeedbackCommand,
   HelpCommand,
 ];

@@ -15,6 +15,7 @@ export interface Character {
   name: string;
   id: string; // Unique identifier
   pioneerManifest: import("@/types/pioneer.types").PioneerManifest; // Pre-Crash DNA
+  characterLoot: import("@/types/loot.types").CharacterLoot; // Personality traits & skills
   lootManifest: LootItem[]; // Lootopian gear/items
   founderBadge: boolean; // Legacy holder status
   pioneerNumber: number; // Position in crew manifest (1-2847)

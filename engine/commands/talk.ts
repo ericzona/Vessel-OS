@@ -108,12 +108,7 @@ export const TalkCommand: Command = {
     if (args.length === 0) {
       return {
         success: false,
-        message: `Usage: talk <npc>
-
-Available NPCs:
-• briggs - Quartermaster (Cargo Hold)
-
-[More NPCs coming soon...]`,
+        message: "Usage: talk <npc>\n\nAvailable NPCs:\n• briggs - Quartermaster (Cargo Hold)\n\n[More NPCs coming soon...]",
       };
     }
 
@@ -125,10 +120,7 @@ Available NPCs:
       if (gameState.currentLocation !== "cargoHold") {
         return {
           success: false,
-          message: `Quartermaster Briggs is not here.
-
-He can be found in the Cargo Hold.
-Use 'move cargo-hold' to go there.`,
+          message: "Quartermaster Briggs is not here.\n\nHe can be found in the Cargo Hold.\nUse 'move cargo-hold' to go there.",
         };
       }
 
@@ -142,17 +134,17 @@ Use 'move cargo-hold' to go there.`,
         
         let alignmentReaction = "";
         if (alignment === "Lawful") {
-          alignmentReaction = `\n\n[He eyes you approvingly]\n\n"Hmm. You've got that 'by-the-book' look about you. Good. The last thing I need is another chaotic wildcard breaking my inventory system. You'll do fine, Popsicle."`;
+          alignmentReaction = "\n\n[He eyes you approvingly]\n\n\"Hmm. You've got that 'by-the-book' look about you. Good. The last thing I need is another chaotic wildcard breaking my inventory system. You'll do fine, Popsicle.\"";
         } else if (alignment === "Chaotic") {
-          alignmentReaction = `\n\n[He narrows his eyes]\n\n"Great. Another chaos agent. I can smell the 'break first, ask questions never' energy on you. Listen up: You touch my cargo without permission, you're getting spaced. Clear?"`;
+          alignmentReaction = "\n\n[He narrows his eyes]\n\n\"Great. Another chaos agent. I can smell the 'break first, ask questions never' energy on you. Listen up: You touch my cargo without permission, you're getting spaced. Clear?\"";
         } else {
-          alignmentReaction = `\n\n[He shrugs]\n\n"Neutral type, huh? Can't decide if that's smart or just indecisive. Either way, don't make waves and we'll get along fine."`;
+          alignmentReaction = "\n\n[He shrugs]\n\n\"Neutral type, huh? Can't decide if that's smart or just indecisive. Either way, don't make waves and we'll get along fine.\"";
         }
         
         // Repair skill unlock
         let maintenanceHint = "";
         if (hasRepairSkill) {
-          maintenanceHint = `\n\n[He notices your tool belt]\n\n"Wait... you actually know how to fix things? Huh. Maybe you're not completely useless. Tell you what—type 'talk briggs maintenance' and I'll show you the REAL ship logs. The ones they don't put in the official reports."`;
+          maintenanceHint = "\n\n[He notices your tool belt]\n\n\"Wait... you actually know how to fix things? Huh. Maybe you're not completely useless. Tell you what—type 'talk briggs maintenance' and I'll show you the REAL ship logs. The ones they don't put in the official reports.\"";
         }
         
         return {
@@ -163,10 +155,7 @@ Use 'move cargo-hold' to go there.`,
       
       // Hidden Maintenance Log for Repair skill holders
       if (args[1] && args[1].toLowerCase() === "maintenance" && hasRepairSkill) {
-        return {
-          success: true,
-          message: `
-╔════════════════════════════════════════════════════════════╗
+        const maintenanceLog = `╔════════════════════════════════════════════════════════════╗
 ║              QUARTERMASTER'S MAINTENANCE LOG              ║
 ╚════════════════════════════════════════════════════════════╝
 
@@ -188,7 +177,11 @@ SHIP INCIDENT LOG - YEAR 147:
 
 [He closes the tablet]
 
-"So yeah. That's why I drink synthetic whiskey that tastes like regret. Now get back to work before I regret telling you this.",
+"So yeah. That's why I drink synthetic whiskey that tastes like regret. Now get back to work before I regret telling you this."`;
+        
+        return {
+          success: true,
+          message: maintenanceLog,
         };
       }
 
@@ -205,9 +198,7 @@ SHIP INCIDENT LOG - YEAR 147:
 
     return {
       success: false,
-      message: `Unknown NPC: "${npcName}"
-
-Try 'talk briggs' to speak with the Quartermaster.`,
+      message: "Unknown NPC: \"" + npcName + "\"\n\nTry 'talk briggs' to speak with the Quartermaster.",
     };
   },
 };

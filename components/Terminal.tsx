@@ -216,20 +216,20 @@ Type 'status' to check ship systems.
 
       {/* Input Area */}
       <div className="border-t-2 border-terminal-text p-4">
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          <span className="text-terminal-text font-bold">{">"}</span>
+        <form onSubmit={handleSubmit} className="flex items-center">
+          <span className="text-terminal-text font-bold mr-2">{">"}</span>
           <input
             ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent text-terminal-text outline-none font-mono caret-terminal-text"
+            className="flex-1 bg-transparent text-terminal-text outline-none font-mono"
             placeholder="Enter command..."
             autoComplete="off"
             autoFocus
+            style={{ caretColor: '#00ff00' }}
           />
-          <span className="terminal-cursor text-terminal-text">█</span>
         </form>
       </div>
     </div>

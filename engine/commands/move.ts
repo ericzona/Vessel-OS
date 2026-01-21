@@ -56,17 +56,21 @@ Movement cost: ${MOVEMENT_COST} subjective time unit
     // Parse destination
     const destination = args[0].toLowerCase().replace(/[-\s]/g, "");
     
-    // Map user input to compartment ID
+    // Map user input to compartment ID (includes single-letter shortcuts)
     const destinationMap: Record<string, CompartmentId> = {
       cryobay: "cryoBay",
       cryo: "cryoBay",
+      c: "cryoBay", // Shorthand
       engineering: "engineering",
       engine: "engineering",
+      e: "engineering", // Shorthand
       bridge: "bridge",
       command: "bridge",
+      b: "bridge", // Shorthand
       cargohold: "cargoHold",
       cargo: "cargoHold",
       hold: "cargoHold",
+      g: "cargoHold", // Shorthand (G for carGo)
     };
 
     const targetId = destinationMap[destination];

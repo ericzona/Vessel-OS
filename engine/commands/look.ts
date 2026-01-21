@@ -87,8 +87,18 @@ export const LookCommand: Command = {
     const currentLocation = gameState.currentLocation as CompartmentKey;
     const location = COMPARTMENTS[currentLocation];
 
+    // Show NPCs in current location
+    let npcPresence = "";
+    if (currentLocation === "cargoHold") {
+      npcPresence = `\n\n[NPC] Quartermaster BRIGGS is here, muttering over inventory tablets.\n       Type 'talk briggs' to interact.`;
+    }
+    
     const formattedExits = location.exits
-      .map(exit => exit.replace(/-/g, ' ').toUpperCase())
+      .map(exit => {
+        const shorthand = exit.charAt(0).toUpperCase();
+        const fullName = exit.replace(/-/g, ' ').toUpperCase();
+        return `[${shorthand}]${fullName.substring(1)}`;
+      })
       .join(", ");
 
     // Check for founder badge - unlock Captain's Log on Bridge
@@ -124,9 +134,9 @@ ${location.description}
 
 ───────────────────────────────────────────────────────────
 
-Obvious exits: ${formattedExits}${captainsLog}
+Obvious exits: ${formattedExits}${npcPresence}${captainsLog}
 
-Use 'move <destination>' to navigate. (Costs 1 subjective time)
+Use 'move <destination>' or shorthand (e.g., 'c' for Cargo) - Costs 1 subjective time
     `.trim();
 
     return {

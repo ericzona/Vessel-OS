@@ -62,51 +62,27 @@ export function generatePioneerManifest(pioneerId: string, generation: number = 
 }
 
 /**
+ * Generate a single stat with 7-20 range and 0.33% chance for critical 21
+ */
+function generateStat(): number {
+  // 0.33% chance for critical roll of 21
+  if (Math.random() < 0.0033) {
+    return 21;
+  }
+  // Normal roll: 7-20
+  return Math.floor(Math.random() * 14) + 7;
+}
+
+/**
  * Generate stats based on Pioneer rank
  */
 function generateStatsForRank(rank: string) {
+  // Generate base stats (7-20 range, with 0.33% chance for 21)
   const baseStats = {
-    perception: 5,
-    salvage: 5,
-    engineering: 5,
+    perception: generateStat(),
+    salvage: generateStat(),
+    engineering: generateStat(),
   };
-  
-  // Rank bonuses
-  switch (rank) {
-    case "Navigator":
-      baseStats.perception += 3;
-      break;
-    case "Salvager":
-      baseStats.salvage += 3;
-      break;
-    case "Engineer":
-      baseStats.engineering += 3;
-      break;
-    case "Technician":
-      baseStats.engineering += 2;
-      baseStats.salvage += 1;
-      break;
-    case "Scout":
-      baseStats.perception += 2;
-      baseStats.salvage += 1;
-      break;
-    case "Drifter":
-      // Balanced - no bonuses
-      baseStats.perception += 1;
-      baseStats.salvage += 1;
-      baseStats.engineering += 1;
-      break;
-  }
-  
-  // Add slight randomization (±1)
-  baseStats.perception += Math.floor(Math.random() * 3) - 1;
-  baseStats.salvage += Math.floor(Math.random() * 3) - 1;
-  baseStats.engineering += Math.floor(Math.random() * 3) - 1;
-  
-  // Ensure minimum of 1
-  baseStats.perception = Math.max(1, baseStats.perception);
-  baseStats.salvage = Math.max(1, baseStats.salvage);
-  baseStats.engineering = Math.max(1, baseStats.engineering);
   
   return baseStats;
 }

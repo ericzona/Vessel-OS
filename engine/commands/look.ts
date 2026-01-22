@@ -93,11 +93,20 @@ export const LookCommand: Command = {
       npcPresence = `\n\n[NPC] Quartermaster BRIGGS is here, muttering over inventory tablets.\n       Type 'talk briggs' to interact.`;
     }
     
+    // Map exits to shorthand letters (avoid collisions)
+    const exitShorthand: Record<string, string> = {
+      "engineering": "E",
+      "bridge": "B",
+      "cargo-hold": "C",
+      "cryo-bay": "K", // K for Kryo to avoid collision with Cargo
+    };
+    
     const formattedExits = location.exits
       .map(exit => {
-        const shorthand = exit.charAt(0).toUpperCase();
+        const letter = exitShorthand[exit] || exit.charAt(0).toUpperCase();
         const fullName = exit.replace(/-/g, ' ').toUpperCase();
-        return `[${shorthand}]${fullName.substring(1)}`;
+        const displayName = exit === "cryo-bay" ? "KRYO-BAY" : fullName;
+        return `[${letter}]${displayName.substring(1)}`;
       })
       .join(", ");
 

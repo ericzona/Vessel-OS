@@ -60,7 +60,8 @@ Movement cost: ${MOVEMENT_COST} subjective time unit
     const destinationMap: Record<string, CompartmentId> = {
       cryobay: "cryoBay",
       cryo: "cryoBay",
-      c: "cryoBay", // Shorthand
+      kryo: "cryoBay",
+      k: "cryoBay", // Shorthand (K for Kryo to avoid collision with Cargo)
       engineering: "engineering",
       engine: "engineering",
       e: "engineering", // Shorthand
@@ -70,7 +71,7 @@ Movement cost: ${MOVEMENT_COST} subjective time unit
       cargohold: "cargoHold",
       cargo: "cargoHold",
       hold: "cargoHold",
-      g: "cargoHold", // Shorthand (G for carGo)
+      c: "cargoHold", // Shorthand (C for Cargo)
     };
 
     const targetId = destinationMap[destination];

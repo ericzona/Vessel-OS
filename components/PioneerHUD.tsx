@@ -46,7 +46,6 @@ export default function PioneerHUD({ manifest, size = 100 }: PioneerHUDProps) {
 
   const renderLayer = (layer: typeof layers[0], index: number) => {
     const isLoaded = loadedImages[layer.src];
-    const yOffset = index * 0.3;
 
     return (
       <g key={layer.id}>
@@ -55,7 +54,7 @@ export default function PioneerHUD({ manifest, size = 100 }: PioneerHUDProps) {
           <>
             <rect
               x={size * 0.15}
-              y={size * 0.15 + yOffset}
+              y={size * 0.15}
               width={size * 0.7}
               height={size * 0.7}
               fill={layer.color}
@@ -64,7 +63,7 @@ export default function PioneerHUD({ manifest, size = 100 }: PioneerHUDProps) {
             />
             <text
               x={size * 0.5}
-              y={size * 0.5 + yOffset}
+              y={size * 0.5}
               fontSize={size * 0.08}
               fill="#ffffff"
               fontFamily="monospace"
@@ -76,11 +75,11 @@ export default function PioneerHUD({ manifest, size = 100 }: PioneerHUDProps) {
           </>
         )}
         
-        {/* Actual PNG image */}
+        {/* Actual PNG image - use href for SVG */}
         <image
           href={layer.src}
           x={0}
-          y={yOffset}
+          y={0}
           width={size}
           height={size}
           onLoad={() => setLoadedImages(prev => ({ ...prev, [layer.src]: true }))}

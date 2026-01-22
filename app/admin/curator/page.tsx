@@ -19,13 +19,18 @@ const LAYER_MAP: Record<string, { folder: string; name: string }> = {
 export default function CuratorPage() {
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [imageList, setImageList] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [sortedCount, setSortedCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  const [totalFiles, setTotalFiles] = useState(0);
 
   useEffect(() => {
-    // Load first image from staging
-    loadNextImage();
+    // Load file list from API
+    loadFileList();
+  }, []);
 
+  useEffect(() => {
     // Keyboard handler
     const handleKeyPress = (e: KeyboardEvent) => {
       const key = e.key;
@@ -40,11 +45,38 @@ export default function CuratorPage() {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, []);
 
-  const loadNextImage = async () => {
-    // In real implementation, this would fetch from /api/curator/next
-    // For now, mock it
-    setCurrentImage(`/staging_assets/item_${Math.floor(Math.random() * 6326)}.png`);
-    setLoading(false);
+  const loadFileList = async () => {
+    try {
+      const response = await fetch('/api/curator/list');
+      const data = await response.json();
+      
+      if (data.success && data.files.length > 0) {
+        setImageList(data.files);
+        setTotalFiles(data.total);
+        setCurrentImage(`/staging_assets/${data.files[0]}`);
+        setCurrentIndex(0);
+      } else {
+        console.error('No files found in staging_assets');
+      }
+    } catch (error) {
+      console.error('Failed to load file list:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadNextImage = () => {
+    if (imageList.length === 0) return;
+    
+    const nextIndex = currentIndex + 1;
+    if (nextIndex < imageList.length) {
+      setCurrentImage(`/staging_assets/${imageList[nextIndex]}`);
+      setCurrentIndex(nextIndex);
+      setImageError(false);
+    } else {
+      // All images sorted!
+      setCurrentImage(null);
+    }
   };
 
   const sortImage = async (layerKey: string) => {
@@ -102,7 +134,10 @@ export default function CuratorPage() {
           <h1 className="text-3xl mb-2">🎯 LOOT-TINDER CURATOR TOOL</h1>
           <p className="text-sm opacity-80">Sort 6,326 Lootopian items into proper layers</p>
           <div className="mt-2 text-xl">
-            Sorted: <span className="text-yellow-400">{sortedCount}</span> / 6,326
+            Sorted: <span className="text-yellow-400">{sortedCount}</span> / {totalFiles || "???"}
+          </div>
+          <div className="text-sm opacity-60 mt-1">
+            Current: {currentIndex + 1} of {totalFiles} | Remaining: {totalFiles - currentIndex - sortedCount}
           </div>
         </div>
 
@@ -110,16 +145,29 @@ export default function CuratorPage() {
         <div className="border-2 border-green-500 p-8 mb-6 flex items-center justify-center bg-gray-900 min-h-[400px]">
           {currentImage ? (
             <div className="relative w-64 h-64 border border-green-500">
-              {/* Fallback placeholder - in production would show actual image */}
-              <div className="w-full h-full bg-gradient-to-br from-purple-900 to-blue-900 flex items-center justify-center">
-                <span className="text-white text-center px-4">
-                  Item Preview<br/>
-                  <span className="text-xs opacity-60">{currentImage.split("/").pop()}</span>
-                </span>
-              </div>
+              {imageError ? (
+                // Corrupted data fallback
+                <div className="w-full h-full bg-gradient-to-br from-yellow-600 to-yellow-800 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-black mb-2">⚠</div>
+                    <div className="text-lg font-bold text-black">DATA CORRUPTED</div>
+                    <div className="text-xs text-black opacity-70 mt-2">{currentImage.split("/").pop()}</div>
+                  </div>
+                </div>
+              ) : (
+                // Actual image with error handling
+                <img
+                  src={currentImage}
+                  alt="Lootopian Item"
+                  className="w-full h-full object-contain"
+                  onError={() => setImageError(true)}
+                />
+              )}
             </div>
           ) : (
-            <div className="text-gray-500">No image loaded</div>
+            <div className="text-2xl text-yellow-400">
+              🎉 ALL IMAGES SORTED! 🎉
+            </div>
           )}
         </div>
 

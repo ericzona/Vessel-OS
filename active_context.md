@@ -38,6 +38,7 @@ The core gameplay loop is implemented and tested. Players can monitor their degr
 ### Playable MVP Loop (TESTED & WORKING)
 
 **The Core Gameplay:**
+
 1. Ship systems degrade constantly (power, oxygen, hull, cryo, scrap)
 2. Player types `status` to monitor degradation with visual bars
 3. Player types `repair <system>` to fix using subjective time (10 units → +15% repair)
@@ -46,13 +47,13 @@ The core gameplay loop is implemented and tested. Players can monitor their degr
 6. Warning alerts appear when systems reach critical thresholds
 
 **Available Commands:**
+
 - `status` - Full ship status report with visual bars + Pioneer lore
 - `repair <system>` - Repair power/oxygen/hull/cryo (costs 10 subjective time)
 - `mine` - Mine the void for $SCRAP (costs 20 subjective time, 15% lore discovery chance)
 - `move <destination>` - Navigate ship compartments (costs 1 subjective time - "Wait" mechanic)
 - `look` - Examine current location, founder badge unlocks Captain's Log on bridge
 - `help` - Display all available commands and gameplay loop
-
 
 ---
 
@@ -129,10 +130,12 @@ The core gameplay loop is implemented and tested. Players can monitor their degr
 ## Technical Debt / Blockers
 
 **Known Issues:**
+
 - 404 error in browser console (likely favicon or static asset) - does not affect functionality
 - SCRAP system currently only displays warnings, no gameplay impact yet (planned for Layer 2)
 
 **Future Optimizations:**
+
 - Consider throttling heartbeat alerts to prevent spam
 - Add localStorage persistence for save/load
 - Optimize re-renders in Terminal component
@@ -146,11 +149,13 @@ The core gameplay loop is implemented and tested. Players can monitor their degr
 **Root Cause:** The Terminal component was calling `addMessage()` on every heartbeat tick when alerts were present, causing React state updates in a loop. Since the SCRAP system started at 20 (below the 50% warning threshold), it triggered constant "WARNING: SCRAP at 20.0%" messages.
 
 **Solution Implemented:**
+
 1. **Alert Deduplication** - Added `lastAlertsRef` to track previously displayed alerts. Now only new/changed alerts are displayed.
 2. **Initial Scrap Adjustment** - Changed starting scrap from 20 to 50 in both Terminal.tsx and ship-heartbeat.ts to avoid immediate warning state.
 3. **Throttle Verification** - Confirmed heartbeat tick rate is properly set to 1000ms (1 second).
 
 **Files Modified:**
+
 - `components/Terminal.tsx` - Added alert deduplication logic using useRef
 - `engine/ship-heartbeat.ts` - Updated default scrap value to 50
 
@@ -172,6 +177,7 @@ The core gameplay loop is implemented and tested. Players can monitor their degr
 The project includes a comprehensive **Vessel-OS Constitution** (`/docs/constitution.md`) - the Genesis Block of The Great Transit governance system:
 
 **Key Components:**
+
 - **$SCRAP Economy** - Native utility token for repairs/upgrades, with mining & burn mechanics
 - **Pioneer DAO** - Decentralized governance system with voting rights (1 token = 1 vote, 2x for legacy holders)
 - **Shadow Ledger** - Pre-blockchain transaction tracking for fair airdrop distribution when $SCRAP launches on Solana
@@ -184,6 +190,7 @@ The project includes a comprehensive **Vessel-OS Constitution** (`/docs/constitu
 ## Testing Summary (January 19, 2026)
 
 **Browser Testing Results:**
+
 - ✅ Terminal renders with retro aesthetic (green-on-black)
 - ✅ Welcome message displays correctly
 - ✅ Ship systems degrade in real-time (verified with live ticking)
@@ -196,6 +203,7 @@ The project includes a comprehensive **Vessel-OS Constitution** (`/docs/constitu
 - ✅ Time scale and game time displayed in header
 
 **Performance:**
+
 - No lag or stuttering
 - Smooth terminal scrolling
 - Command parsing instantaneous

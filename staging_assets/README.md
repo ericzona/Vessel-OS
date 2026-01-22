@@ -1,0 +1,1 @@
+Staging assets folder created

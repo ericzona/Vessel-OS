@@ -45,7 +45,7 @@
 
 ### Project Structure
 
-```
+```md
 code-agent-v1-core/
 ├── app/                      # Next.js app directory
 │   ├── page.tsx             # Main game page
@@ -69,7 +69,7 @@ code-agent-v1-core/
 
 ### Data Flow
 
-```
+```md
 Player Input → Terminal Component
      ↓
 Command Parser → Parse & Route
@@ -87,17 +87,19 @@ Terminal Display Update
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 ### Installation Steps
 
 1. **Install Dependencies**
+
    ```bash
    npm install
    ```
 
 2. **Run Development Server**
+
    ```bash
    npm run dev
    ```
@@ -121,6 +123,7 @@ npm start
 The main UI component providing a retro terminal interface.
 
 **Features:**
+
 - Command input with history (↑/↓ arrows)
 - Real-time message display
 - Color-coded message types
@@ -128,6 +131,7 @@ The main UI component providing a retro terminal interface.
 - Blinking cursor effect
 
 **Message Types:**
+
 - `SYSTEM` - General system messages (green)
 - `PLAYER` - Player commands (cyan)
 - `SUCCESS` - Successful operations (green)
@@ -140,21 +144,25 @@ The main UI component providing a retro terminal interface.
 Real-time ship simulation with tick-based degradation.
 
 **Monitored Systems:**
+
 - **Power** - Core ship energy (degradation: 0.05/tick)
 - **Oxygen** - Life support (degradation: 0.03/tick)
 - **Hull** - Ship integrity (degradation: 0.02/tick)
 - **Cryo** - Crew preservation (degradation: 0.01/tick)
 
 **Critical Thresholds:**
+
 - `<20%` - CRITICAL (red alert)
 - `<50%` - WARNING (yellow alert)
 - `0%` - FAILURE (game over condition)
 
 **System Interdependencies:**
+
 - Low Power (< 20%) → Accelerated Oxygen loss
 - Hull Breach (< 20%) → Oxygen leak
 
 **Key Methods:**
+
 ```typescript
 start(callback) // Start simulation loop
 stop()          // Stop simulation
@@ -171,16 +179,19 @@ Manages relativistic time as a player resource.
 **Concept:** Players can manipulate time flow (slow/normal/fast) but this drains their "Subjective Time" reserve.
 
 **Time Scales:**
+
 - `0.5x` - SLOW (high precision, drains subjective time)
 - `1.0x` - NORMAL (default, recharges subjective time)
 - `2.0x` - FAST (quick actions, drains subjective time)
 
 **Resource Management:**
+
 - Decay Rate: `0.1` per tick at non-normal speeds
 - Recharge Rate: `0.05` per tick at normal speed
 - Auto-revert to normal when depleted
 
 **Key Methods:**
+
 ```typescript
 setTimeScale(scale) // Change speed
 tick(deltaTime)     // Update resource
@@ -195,12 +206,14 @@ MUSH-style text command interpreter.
 **Command Pattern:** `<verb> [target] [args...]`
 
 **Architecture:**
+
 - Token-based parsing
 - Map-based command routing
 - Contextual help system
 - Extensible handler pattern
 
 **Key Methods:**
+
 ```typescript
 parse(input, gameState) // Parse and execute
 getCommandList()        // List all commands
@@ -229,6 +242,7 @@ getCommandList()        // List all commands
 ### Win/Loss Conditions
 
 **Current Version (Core Layer):**
+
 - **Loss:** Any ship system reaches 0%
 - **Win:** Not yet implemented (planned for Layer 3)
 
@@ -239,7 +253,7 @@ getCommandList()        // List all commands
 ### System Monitoring
 
 | Command | Description | Example |
-|---------|-------------|---------|
+| --------- | ------------- | --------- |
 | `status` | Show full ship status | `status` |
 | `check <system>` | Check specific system | `check power` |
 | `systems` | Alias for status | `systems` |
@@ -283,12 +297,14 @@ getCommandList()        // List all commands
 ### Layer 2: Growth Economy (Planned)
 
 **Features:**
+
 - Seed → Plant → Resource crafting system
 - Inventory management
 - Cryo crew awakening and skill assignment
 - Resource-based repairs
 
 **New Commands:**
+
 - `grow <seed>` - Plant and nurture seeds
 - `harvest <plant>` - Collect resources
 - `craft <item>` - Create components
@@ -298,12 +314,14 @@ getCommandList()        // List all commands
 ### Layer 3: Episodes & Events (Planned)
 
 **Features:**
+
 - Modular story missions
 - Random anomaly events
 - Away team mechanics
 - Ship upgrade tech tree
 
 **New Commands:**
+
 - `mission` - View available missions
 - `scan` - Detect anomalies
 - `upgrade <system>` - Improve ship
@@ -312,6 +330,7 @@ getCommandList()        // List all commands
 ### Layer 4: The Galaxy (Planned)
 
 **Features:**
+
 - Destination mechanics
 - Multi-ship fleet management
 - End-game revelation
@@ -359,6 +378,7 @@ getCommandList()        // List all commands
 4. Document in this manual
 
 Example:
+
 ```typescript
 private handleNewCommand(args: string[], gameState: GameState): CommandResult {
   // Implementation
@@ -417,6 +437,4 @@ Refresh the page to restart the game with default values.
 Proprietary - Hypehouse Ventures  
 Built with the Fingerprint V1 methodology for maximum scalability and clean handoff.
 
----
-
-**END OF SYSTEM MANUAL**
+### END OF SYSTEM MANUAL

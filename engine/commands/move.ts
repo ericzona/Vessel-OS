@@ -84,6 +84,16 @@ Valid destinations: cryo-bay, engineering, bridge, cargo-hold`,
       };
     }
 
+    // Check if already at destination
+    if (targetId === gameState.currentLocation) {
+      return {
+        success: false,
+        message: `You are already here.
+
+Current location: ${COMPARTMENT_NAMES[gameState.currentLocation]}`,
+      };
+    }
+
     // Check if destination is accessible from current location
     const validExits = COMPARTMENT_EXITS[gameState.currentLocation];
     if (!validExits.includes(targetId)) {

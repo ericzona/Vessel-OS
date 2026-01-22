@@ -97,7 +97,7 @@ let dialogueIndex = 0;
 
 export const TalkCommand: Command = {
   name: "talk",
-  aliases: ["speak", "chat", "converse"],
+  aliases: ["speak", "chat", "converse", "t"], // Add 't' as shorthand
   description: "Talk to NPCs on the ship",
   usage: "talk [npc name]",
   category: CommandCategory.CREW,
@@ -108,11 +108,19 @@ export const TalkCommand: Command = {
     if (args.length === 0) {
       return {
         success: false,
-        message: "Usage: talk <npc>\n\nAvailable NPCs:\n• briggs - Quartermaster (Cargo Hold)\n\n[More NPCs coming soon...]",
+        message: "Usage: talk <npc>\n\nAvailable NPCs:\n• briggs - Quartermaster (Cargo Hold)\n\nShorthand: 't b' for 'talk briggs'\n\n[More NPCs coming soon...]",
       };
     }
 
-    const npcName = args[0].toLowerCase();
+    // Map shorthand to full names
+    const npcInput = args[0].toLowerCase();
+    const npcShorthand: Record<string, string> = {
+      b: "briggs",
+      briggs: "briggs",
+      quartermaster: "briggs",
+    };
+    
+    const npcName = npcShorthand[npcInput] || npcInput;
 
     // Quartermaster Briggs
     if (npcName === "briggs" || npcName === "quartermaster") {

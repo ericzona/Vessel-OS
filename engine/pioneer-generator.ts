@@ -6,11 +6,12 @@
 
 import { PioneerManifest, LayerSlot } from "@/types/pioneer.types";
 
-// Basic starter assets (placeholders for future IPFS hashes)
+// Basic starter assets - MUST match actual file names
 const STARTER_ASSETS = {
   backgrounds: ["bg_void_01", "bg_stars_01", "bg_nebula_01"],
-  skins: ["skin_pale", "skin_tan", "skin_dark"],
-  eyes: ["eyes_brown", "eyes_blue", "eyes_green"],
+  bodies: ["1-white", "2-peach", "3-Tanned-2", "4-Olive", "5-Brown", "6-Brown-2", "7-Brown-3", "8-Black"],
+  eyes: ["1-Black", "2-Blue", "3-Brown", "4-Gray", "5-Green", "6-Orange", "7-Purple", "8-Red", "9-Yellow"],
+  hair: ["1-spiked-black", "5-spiked-red", "7-spiked-blonde", "26-chronos-black", "27-chronos-blonde"],
   shirts: ["shirt_tattered", "shirt_utility", "shirt_pioneer"],
   pants: ["pants_cargo", "pants_flight", "pants_utility"],
   shoes: ["shoes_boots", "shoes_sneakers"],
@@ -32,11 +33,11 @@ export function generatePioneerManifest(pioneerId: string, generation: number = 
   // Random rank selection
   const rank = RANKS[Math.floor(Math.random() * RANKS.length)];
   
-  // Generate layers with basic starter gear
+  // Generate layers with basic starter gear - use actual file IDs
   const layers: Record<LayerSlot, string | null> = {
     [LayerSlot.BACKGROUND]: randomFrom(STARTER_ASSETS.backgrounds),
     [LayerSlot.SHADOW]: null, // No shadow for starters
-    [LayerSlot.BODY]: randomFrom(STARTER_ASSETS.skins),
+    [LayerSlot.BODY]: randomFrom(STARTER_ASSETS.bodies),
     [LayerSlot.EYES]: randomFrom(STARTER_ASSETS.eyes),
     [LayerSlot.PANTS]: randomFrom(STARTER_ASSETS.pants),
     [LayerSlot.SHOES]: randomFrom(STARTER_ASSETS.shoes),
@@ -46,7 +47,7 @@ export function generatePioneerManifest(pioneerId: string, generation: number = 
     [LayerSlot.WRISTS]: null, // No wrist accessories
     [LayerSlot.NECK]: null, // No necklace
     [LayerSlot.FACE_ACC]: null, // No glasses/mask
-    [LayerSlot.HAIR_HAT]: null, // Bald/no hat for now
+    [LayerSlot.HAIR_HAT]: randomFrom(STARTER_ASSETS.hair), // Assign actual hair
   };
   
   // Generate stats based on rank

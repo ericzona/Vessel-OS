@@ -17,8 +17,8 @@ export class ShipHeartbeat {
   // Degradation rates per tick (affected by time scale)
   private readonly DEGRADATION = {
     power: 0.05,
-    oxygen: 0.03,
-    hull: 0.02,
+    oxygen: 0.0, // DISABLED for stability
+    hull: 0.0,   // DISABLED for stability
     cryo: 0.01,
   };
 

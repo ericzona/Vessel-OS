@@ -53,6 +53,16 @@ ${getPioneerSummary(gameState.character.pioneerManifest)}
 ───────────────────────────────────────────────────────────
 
 ${formatCharacterLoot(gameState.character.characterLoot)}
+
+───────────────────────────────────────────────────────────
+
+📊 CORE STATS (Range: 7-20):
+  STR (Strength):     ${gameState.character.pioneerManifest.stats.perception}
+  VIT (Vitality):     ${gameState.character.pioneerManifest.stats.salvage}
+  AGI (Agility):      ${gameState.character.pioneerManifest.stats.engineering}
+  INT (Intelligence): ${gameState.character.pioneerManifest.stats.perception + 2}
+  LCK (Luck):         ${gameState.character.pioneerManifest.stats.salvage - 1}
+  DEX (Dexterity):    ${gameState.character.pioneerManifest.stats.engineering + 1}
     `.trim();
 
     return {

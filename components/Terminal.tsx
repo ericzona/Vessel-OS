@@ -100,11 +100,11 @@ Type 'status' to check ship systems.
         gameTime: prev.gameTime + 1,
       }));
       
-      // Display alerts only if they're new (prevent duplicate spam)
+      // Only show critical alerts (hull/oxygen/cryo), not power spam
       const currentAlerts = new Set(alerts);
       alerts.forEach((alert) => {
-        // Only add alert if it's not in the last batch of alerts
-        if (!lastAlertsRef.current.has(alert)) {
+        // Only add alert if it's critical (not power warnings) and not in last batch
+        if (!alert.includes("POWER") && !lastAlertsRef.current.has(alert)) {
           addMessage(alert, MessageType.WARNING);
         }
       });
@@ -199,9 +199,26 @@ Type 'status' to check ship systems.
       {/* Terminal Header */}
       <div className="bg-terminal-text text-terminal-bg px-4 py-2 font-bold flex justify-between items-center">
         <span>PIONEER SHIP TERMINAL</span>
-        <span className="text-sm">
-          TIME: {gameState.gameTime}s | SCALE: {gameState.timeDilatation.timeScale}x
-        </span>
+        <div className="flex gap-4 text-sm items-center">
+          <span>TIME: {gameState.gameTime}s</span>
+          <span>SCALE: {gameState.timeDilatation.timeScale}x</span>
+          {/* Power Warning with color coding */}
+          {gameState.ship.power <= 50 && (
+            <span 
+              className={`px-2 py-0.5 rounded ${
+                gameState.ship.power <= 10 
+                  ? 'bg-red-600 text-white animate-pulse' 
+                  : gameState.ship.power <= 25
+                  ? 'bg-red-500 text-black'
+                  : gameState.ship.power <= 40
+                  ? 'bg-orange-500 text-black'
+                  : 'bg-yellow-500 text-black'
+              }`}
+            >
+              ⚠ PWR: {gameState.ship.power.toFixed(1)}%
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Messages Area */}

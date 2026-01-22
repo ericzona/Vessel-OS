@@ -4,7 +4,7 @@ import { join } from 'path';
 
 export async function GET() {
   try {
-    const stagingPath = join(process.cwd(), 'staging_assets');
+    const stagingPath = join(process.cwd(), 'public', 'staging_assets');
     const files = await readdir(stagingPath);
     
     // Filter for PNG files only, exclude README

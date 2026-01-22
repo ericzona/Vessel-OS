@@ -24,6 +24,8 @@ export default function CuratorPage() {
   const [loading, setLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const [totalFiles, setTotalFiles] = useState(0);
+  const [processing, setProcessing] = useState(false);
+  const [feedback, setFeedback] = useState<string>("");
 
   useEffect(() => {
     // Load file list from API
@@ -38,12 +40,14 @@ export default function CuratorPage() {
         sortImage(key);
       } else if (key === "0") {
         markAsGarbage();
+      } else if (key.toLowerCase() === "s") {
+        skipImage();
       }
     };
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, []);
+  }, [currentImage]);
 
   const loadFileList = async () => {
     try {
@@ -80,41 +84,74 @@ export default function CuratorPage() {
   };
 
   const sortImage = async (layerKey: string) => {
-    if (!currentImage) return;
+    if (!currentImage || processing) return;
 
+    setProcessing(true);
     const layer = LAYER_MAP[layerKey];
-    const timestamp = new Date().toISOString();
     const filename = currentImage.split("/").pop() || "unknown";
 
-    // Log to master_manifest.json
-    const logEntry = {
-      id: sortedCount + 1,
-      filename,
-      layer: layer.folder,
-      timestamp,
-    };
+    try {
+      const response = await fetch('/api/curator/move', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename, targetFolder: layer.folder }),
+      });
 
-    console.log("SORTED:", logEntry);
-
-    // In real implementation: 
-    // await fetch('/api/curator/sort', { 
-    //   method: 'POST', 
-    //   body: JSON.stringify({ filename, targetFolder: layer.folder })
-    // });
-
-    setSortedCount(prev => prev + 1);
-    loadNextImage();
+      const data = await response.json();
+      
+      if (data.success) {
+        setFeedback(`✓ Moved to ${layer.name}!`);
+        setSortedCount(prev => prev + 1);
+        setTimeout(() => setFeedback(""), 2000);
+        loadNextImage();
+      } else {
+        setFeedback(`✗ Error: ${data.error}`);
+        setTimeout(() => setFeedback(""), 3000);
+      }
+    } catch (error) {
+      setFeedback(`✗ Network error`);
+      setTimeout(() => setFeedback(""), 3000);
+    } finally {
+      setProcessing(false);
+    }
   };
 
   const markAsGarbage = async () => {
-    if (!currentImage) return;
+    if (!currentImage || processing) return;
 
-    const timestamp = new Date().toISOString();
+    setProcessing(true);
     const filename = currentImage.split("/").pop() || "unknown";
 
-    console.log("GARBAGE:", { filename, timestamp });
+    try {
+      const response = await fetch('/api/curator/move', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename, targetFolder: 'garbage' }),
+      });
 
-    setSortedCount(prev => prev + 1);
+      const data = await response.json();
+      
+      if (data.success) {
+        setFeedback(`🗑 Sent to garbage!`);
+        setSortedCount(prev => prev + 1);
+        setTimeout(() => setFeedback(""), 2000);
+        loadNextImage();
+      } else {
+        setFeedback(`✗ Error: ${data.error}`);
+        setTimeout(() => setFeedback(""), 3000);
+      }
+    } catch (error) {
+      setFeedback(`✗ Network error`);
+      setTimeout(() => setFeedback(""), 3000);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const skipImage = () => {
+    if (!currentImage || processing) return;
+    setFeedback("⏭ Skipped");
+    setTimeout(() => setFeedback(""), 1000);
     loadNextImage();
   };
 
@@ -139,6 +176,16 @@ export default function CuratorPage() {
           <div className="text-sm opacity-60 mt-1">
             Current: {currentIndex + 1} of {totalFiles} | Remaining: {totalFiles - currentIndex - sortedCount}
           </div>
+          {feedback && (
+            <div className="mt-2 text-lg font-bold text-yellow-300 animate-pulse">
+              {feedback}
+            </div>
+          )}
+          {processing && (
+            <div className="mt-2 text-sm text-yellow-500">
+              Processing...
+            </div>
+          )}
         </div>
 
         {/* Current Image */}
@@ -186,14 +233,25 @@ export default function CuratorPage() {
           ))}
         </div>
 
-        {/* Garbage Button */}
-        <button
-          onClick={markAsGarbage}
-          className="w-full border-2 border-red-500 text-red-500 p-4 hover:bg-red-900 hover:bg-opacity-30 transition-colors"
-        >
-          <div className="text-2xl font-bold">[0] GARBAGE / DELETE</div>
-          <div className="text-sm mt-1 opacity-60">Mark as unusable</div>
-        </button>
+        {/* Garbage + Skip Buttons */}
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={markAsGarbage}
+            disabled={processing}
+            className="border-2 border-red-500 text-red-500 p-4 hover:bg-red-900 hover:bg-opacity-30 transition-colors disabled:opacity-50"
+          >
+            <div className="text-2xl font-bold">[0] GARBAGE</div>
+            <div className="text-sm mt-1 opacity-60">Delete item</div>
+          </button>
+          <button
+            onClick={skipImage}
+            disabled={processing}
+            className="border-2 border-yellow-500 text-yellow-500 p-4 hover:bg-yellow-900 hover:bg-opacity-30 transition-colors disabled:opacity-50"
+          >
+            <div className="text-2xl font-bold">[S] SKIP</div>
+            <div className="text-sm mt-1 opacity-60">Skip for now</div>
+          </button>
+        </div>
 
         {/* Instructions */}
         <div className="mt-8 border border-green-500 p-4 text-xs opacity-60">

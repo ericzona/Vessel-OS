@@ -27,7 +27,7 @@ export class CommandParser {
    * @param input - Raw player input
    * @param gameState - Current game state
    */
-  public parse(input: string, gameState: GameState): CommandResult {
+  public async parse(input: string, gameState: GameState): Promise<CommandResult> {
     const trimmed = input.trim().toLowerCase();
     
     if (!trimmed) {

@@ -29,6 +29,7 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const messageIdCounter = useRef(0);
+  const hasShownWelcome = useRef(false);
   
   // Initialize command parser with dependencies
   const shipHeartbeat = useRef(new ShipHeartbeat(gameState.ship));
@@ -45,9 +46,10 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
     inputRef.current?.focus();
   }, []);
 
-  // Welcome message on first load
+  // Welcome message on first load (only once)
   useEffect(() => {
-    if (messages.length === 0) {
+    if (!hasShownWelcome.current) {
+      hasShownWelcome.current = true;
       addMessage(getWelcomeMessage());
     }
   }, []);
@@ -86,7 +88,7 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
     addMessage(`> ${trimmedCmd}`);
 
     // Parse and execute using CommandParser
-    const result: CommandResult = commandParser.current.parse(trimmedCmd, gameState);
+    const result: CommandResult = await commandParser.current.parse(trimmedCmd, gameState);
 
     // Update game state if command returns updates
     if (result.updates) {

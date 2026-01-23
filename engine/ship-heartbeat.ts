@@ -15,11 +15,12 @@ export class ShipHeartbeat {
   private readonly TICK_RATE = 1000; // 1 second per tick
   
   // Degradation rates per tick (affected by time scale)
+  // PHASE 4.6: SAFE HARBOR - All passive decay disabled
   private readonly DEGRADATION = {
-    power: 0.05,
-    oxygen: 0.0, // DISABLED for stability
-    hull: 0.0,   // DISABLED for stability
-    cryo: 0.01,
+    power: 0.0,  // DISABLED - Safe harbor
+    oxygen: 0.0, // DISABLED - Safe harbor
+    hull: 0.0,   // DISABLED - Safe harbor
+    cryo: 0.0,   // DISABLED - Safe harbor
   };
 
   // Critical thresholds

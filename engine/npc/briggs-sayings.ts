@@ -77,6 +77,7 @@ export function getBriggsGreeting(): string {
     "Ahoy there, mate! Come fer a tale or just lost in the void?",
     "Partner! Pull up a crate. Briggs has got words fer ye.",
     "Arrr! The void's lonely, but ye found the right crusty ol' dog to talk to!",
+    "Ship's holding together for once, Popsicle! Why don't you go decorate your quarters?",
   ];
   return greetings[Math.floor(Math.random() * greetings.length)];
 }

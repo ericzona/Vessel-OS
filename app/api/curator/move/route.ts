@@ -16,7 +16,10 @@ export async function POST(request: Request) {
 
     const publicPath = join(process.cwd(), 'public');
     const sourcePath = join(publicPath, 'staging_assets', filename);
-    const targetPath = join(publicPath, 'assets', 'pioneer', targetFolder, filename);
+    
+    // Rename with 'item_' prefix
+    const newFilename = `item_${filename}`;
+    const targetPath = join(publicPath, 'assets', 'pioneer', targetFolder, newFilename);
     const targetDir = join(publicPath, 'assets', 'pioneer', targetFolder);
 
     // Ensure target directory exists
@@ -24,12 +27,13 @@ export async function POST(request: Request) {
       await mkdir(targetDir, { recursive: true });
     }
 
-    // Move file
+    // Move and rename file
     await rename(sourcePath, targetPath);
 
     return NextResponse.json({
       success: true,
-      message: `Moved ${filename} to ${targetFolder}`,
+      message: `Moved ${filename} to ${targetFolder} as ${newFilename}`,
+      newFilename,
     });
   } catch (error) {
     console.error('Move error:', error);

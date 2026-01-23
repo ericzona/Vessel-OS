@@ -5,6 +5,7 @@
  */
 
 import { Command, CommandResult, CommandContext, CommandCategory } from "@/types/game.types";
+import { createBorderedTitle, createDivider } from "@/engine/ascii-border";
 
 // Compartment descriptions with lore
 const COMPARTMENTS = {
@@ -132,7 +133,7 @@ Stone. Pioneer #1 of the first generation. Thank you."
 
     const output = `
 ╔════════════════════════════════════════════════════════════╗
-║  ${location.name.toUpperCase().padEnd(57)}║
+║${location.name.toUpperCase().padStart((60 + location.name.toUpperCase().length) / 2).padEnd(60)}║
 ╚════════════════════════════════════════════════════════════╝
 
 ${location.description}

@@ -12,7 +12,6 @@ const config: Config = {
         terminal: {
           bg: "#0a0a0a",
           text: "#00ff00",
-          dim: "#008800",
           highlight: "#00ffff",
           warning: "#ffff00",
           error: "#ff0000",
@@ -20,6 +19,7 @@ const config: Config = {
       },
       fontFamily: {
         mono: ["Courier New", "monospace"],
+        retro: ['"Press Start 2P"', "monospace"],
       },
     },
   },

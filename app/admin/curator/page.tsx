@@ -3,17 +3,17 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
-// Layer mapping for hotkeys 1-9
+// Layer mapping for hotkeys 0-9 (aligned with folder IDs for muscle memory)
 const LAYER_MAP: Record<string, { folder: string; name: string }> = {
-  "1": { folder: "0-background", name: "Background" },
-  "2": { folder: "1-shadow", name: "Shadow" },
-  "3": { folder: "2-body", name: "Body" },
-  "4": { folder: "3-eyes", name: "Eyes" },
-  "5": { folder: "4-shirt", name: "Shirt" },
-  "6": { folder: "5-pants", name: "Pants" },
-  "7": { folder: "6-shoes", name: "Shoes" },
-  "8": { folder: "7-jacket", name: "Jacket" },
-  "9": { folder: "8-hat", name: "Hair/Hat" },
+  "1": { folder: "10-necklace", name: "Necklace" },
+  "2": { folder: "2-body", name: "Body" },
+  "3": { folder: "3-eyes", name: "Eyes" },
+  "4": { folder: "4-shirt", name: "Shirt" },
+  "5": { folder: "5-pants", name: "Pants" },
+  "6": { folder: "6-shoes", name: "Shoes" },
+  "7": { folder: "7-jacket", name: "Jacket" },
+  "8": { folder: "8-hat", name: "Hat" },
+  "9": { folder: "9-glasses", name: "Glasses" },
 };
 
 export default function CuratorPage() {
@@ -100,9 +100,10 @@ export default function CuratorPage() {
       const data = await response.json();
       
       if (data.success) {
-        setFeedback(`✓ Moved to ${layer.name}!`);
+        const folderId = layer.folder.split('-')[0]; // Extract folder ID (e.g., "10" from "10-necklace")
+        setFeedback(`✓ Moved ${filename} to Folder ${folderId} (${layer.name})`);
         setSortedCount(prev => prev + 1);
-        setTimeout(() => setFeedback(""), 2000);
+        setTimeout(() => setFeedback(""), 2500);
         loadNextImage();
       } else {
         setFeedback(`✗ Error: ${data.error}`);

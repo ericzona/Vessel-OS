@@ -4,6 +4,7 @@
  */
 
 import { Command, CommandResult, CommandContext, CommandCategory } from "@/types/game.types";
+import { createBorderedTitle, createDivider } from "@/engine/ascii-border";
 
 export const HelpCommand: Command = {
   name: "help",

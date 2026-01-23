@@ -68,6 +68,8 @@ export interface GameState {
   compartmentOwnership: CompartmentOwnership[]; // World Lock system
   gameTime: number; // Total elapsed game ticks
   isRunning: boolean;
+  accomplishments?: import("@/engine/hidden-accomplishments").AccomplishmentState; // Hidden achievements
+  briggsConversations?: number; // Track talks with Briggs for "Chatty Pioneer" achievement
 }
 
 export interface TimeDilatationState {

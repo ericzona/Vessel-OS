@@ -1,10 +1,17 @@
 /**
  * TALK Command
  * Interact with NPCs on the ship
- * First NPC: Quartermaster (Cargo Hold) - Crusty old-timer
+ * First NPC: Quartermaster Briggs (Cargo Hold) - The "Sayer of Sayings"
  */
 
 import { Command, CommandResult, CommandContext, CommandCategory } from "@/types/game.types";
+import { getBriggsSaying, getBriggsGreeting, getBriggsFarewell } from "@/engine/npc/briggs-sayings";
+import {
+  createAccomplishmentState,
+  incrementAccomplishment,
+  getUnlockMessage,
+  grantChattyPioneerReward,
+} from "@/engine/hidden-accomplishments";
 
 const QUARTERMASTER_DIALOGUES = {
   initial: `
@@ -102,7 +109,7 @@ export const TalkCommand: Command = {
   usage: "talk [npc name]",
   category: CommandCategory.CREW,
 
-  execute(args: string[], context: CommandContext): CommandResult {
+  async execute(args: string[], context: CommandContext): Promise<CommandResult> {
     const { gameState } = context;
 
     if (args.length === 0) {
@@ -193,14 +200,51 @@ SHIP INCIDENT LOG - YEAR 147:
         };
       }
 
-      // Subsequent visits: cycle through repeat dialogues
+      // Initialize accomplishment state if not exists
+      if (!gameState.accomplishments) {
+        gameState.accomplishments = createAccomplishmentState();
+      }
+      
+      // Track Briggs conversations
+      gameState.briggsConversations = (gameState.briggsConversations || 0) + 1;
+      
+      // Check for "Chatty Pioneer" accomplishment
+      const accomplishmentResult = incrementAccomplishment(
+        gameState.accomplishments,
+        'chattypioneer'
+      );
+      
+      // Subsequent visits: cycle through repeat dialogues + add a random Briggs saying
       const repeatDialogues = QUARTERMASTER_DIALOGUES.repeat;
       const currentDialogue = repeatDialogues[(dialogueIndex - 1) % repeatDialogues.length];
       dialogueIndex++;
-
+      
+      // Add a random saying from Briggs' personality mix
+      const saying = getBriggsSaying();
+      const sayingPrefix = saying.type === 'pirate' ? '🏴‍☠️' : saying.type === 'prospector' ? '⛏️' : '📜';
+      const sayingFooter = `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${sayingPrefix} BRIGGS' WISDOM:\n"${saying.text}"`;
+      
+      let finalMessage = currentDialogue + sayingFooter;
+      
+      // If accomplishment was just unlocked, add the unlock message
+      if (accomplishmentResult.unlocked && accomplishmentResult.accomplishment) {
+        const unlockMsg = getUnlockMessage(accomplishmentResult.accomplishment);
+        const rewardResult = grantChattyPioneerReward();
+        
+        if (rewardResult.success) {
+          finalMessage += `\n\n${unlockMsg}\n\n[You received: ${rewardResult.item}]\n\nBRIGGS: "Wait... did you just get a notification? Ha! The ship AI must like you. That's rare. Real rare. Here, take this shirt from the lost & found. Least I can do for someone who actually listens to an old man ramble."`;
+        } else {
+          finalMessage += `\n\n${unlockMsg}`;
+        }
+      }
+      
       return {
         success: true,
-        message: currentDialogue,
+        message: finalMessage,
+        updates: {
+          briggsConversations: gameState.briggsConversations,
+          accomplishments: gameState.accomplishments,
+        },
       };
     }
 

@@ -6,6 +6,7 @@
 import { Command, CommandResult, CommandContext, CommandCategory } from "@/types/game.types";
 import { getPioneerSummary } from "@/engine/pioneer-generator";
 import { formatCharacterLoot } from "@/types/loot.types";
+import { createBorderedTitle, createDivider } from "@/engine/ascii-border";
 
 export const StatusCommand: Command = {
   name: "status",
@@ -21,9 +22,12 @@ export const StatusCommand: Command = {
     const timeState = timeDilatation.getState();
     const health = shipHeartbeat.getOverallHealth();
 
+    const title = "SHIP STATUS REPORT";
+    const paddedTitle = title.padStart((60 + title.length) / 2).padEnd(60);
+    
     const message = `
 ╔════════════════════════════════════════════════════════════╗
-║                    SHIP STATUS REPORT                     ║
+║${paddedTitle}║
 ╚════════════════════════════════════════════════════════════╝
 
 ${report}

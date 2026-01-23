@@ -131,13 +131,18 @@ graph LR
 - Core project structure (README, .clinerules, documentation framework)
 - Active Context tracking system
 - Vision Map initialization
-- Terminal Emulator Component (with command history)
-- Ship-Heartbeat Engine (tick-based degradation)
+- Terminal Emulator Component (with command history + typewriter queue)
+- Ship-Heartbeat Engine (tick-based degradation - now disabled for safe harbor)
 - Time Dilatation System (subjective time resource)
 - Command Registry Pattern (dynamic loading)
 - Repair Command (subjective time → ship repair)
 - Credits System (Solana integration foundation)
 - Lootopian Character System (NFT-ready layers)
+- **Typewriter 2.0** (30ms/char buffered message queue)
+- **9-Point Alignment System** (Identity Engine with Law/Chaos + Good/Evil tracking)
+- **Binary Choice System** (Location-based moral dilemmas)
+- **Profile Modal** (10x Pioneer view with alignment display)
+- **Status Menu** (Ship/Pioneer/Alignment sub-commands)
 
 ### 🔨 In Progress (Layer 2: Command Expansion)
 - Command Registry with status, repair, help

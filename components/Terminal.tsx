@@ -1,30 +1,37 @@
 "use client";
 
 import { useEffect, useRef, useState, KeyboardEvent } from "react";
-import { GameState, CommandResult } from "@/types/game.types";
+import { GameState, CommandResult, BinaryChoice } from "@/types/game.types";
 import { CommandParser } from "@/engine/command-parser";
 import { ShipHeartbeat } from "@/engine/ship-heartbeat";
 import { TimeDilatationManager } from "@/engine/time-dilatation";
 import { createBorderedTitle, createDivider } from "@/engine/ascii-border";
+import { getAlignmentDescription } from "@/types/alignment.types";
+import { applyAlignmentShift } from "@/types/alignment.types";
 import PioneerHUD from "./PioneerHUD";
+import TypewriterText from "./TypewriterText";
 
 interface TerminalProps {
   gameState: GameState;
   onGameStateUpdate: (newState: GameState) => void;
 }
 
-interface Message {
+interface QueuedMessage {
   id: number;
   text: string;
   timestamp: Date;
+  isNarrative: boolean; // true = typewriter, false = instant
 }
 
 export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messageQueue, setMessageQueue] = useState<QueuedMessage[]>([]);
+  const [displayedMessages, setDisplayedMessages] = useState<QueuedMessage[]>([]);
+  const [currentTypingMessage, setCurrentTypingMessage] = useState<QueuedMessage | null>(null);
   const [input, setInput] = useState("");
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showBinaryChoice, setShowBinaryChoice] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -39,7 +46,7 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
   // Auto-scroll to bottom when new messages appear
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [displayedMessages, currentTypingMessage]);
 
   // Focus input on mount
   useEffect(() => {
@@ -50,42 +57,86 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
   useEffect(() => {
     if (!hasShownWelcome.current) {
       hasShownWelcome.current = true;
-      addMessage(getWelcomeMessage());
+      addMessage(getWelcomeMessage(), true); // Narrative typewriter
     }
   }, []);
+
+  // Process message queue (one at a time with typewriter)
+  useEffect(() => {
+    if (!currentTypingMessage && messageQueue.length > 0) {
+      const nextMessage = messageQueue[0];
+      setMessageQueue(prev => prev.slice(1));
+      
+      if (nextMessage.isNarrative) {
+        // Show with typewriter effect
+        setCurrentTypingMessage(nextMessage);
+      } else {
+        // Instant display (for commands and system messages)
+        setDisplayedMessages(prev => [...prev, nextMessage]);
+      }
+    }
+  }, [messageQueue, currentTypingMessage]);
 
   // Global keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      // [P] - Toggle profile modal
       if (e.key === 'p' || e.key === 'P') {
         if (document.activeElement?.tagName !== 'INPUT') {
           e.preventDefault();
           setShowProfileModal(prev => !prev);
         }
       }
+      
+      // [A] or [B] - Binary choice selection
+      if (gameState.pendingChoice && !showProfileModal) {
+        if (e.key === 'a' || e.key === 'A') {
+          e.preventDefault();
+          handleBinaryChoice('A');
+        } else if (e.key === 'b' || e.key === 'B') {
+          e.preventDefault();
+          handleBinaryChoice('B');
+        }
+      }
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [gameState.pendingChoice, showProfileModal]);
 
-  const addMessage = (text: string) => {
-    setMessages((prev) => [
-      ...prev,
-      { id: messageIdCounter.current++, text, timestamp: new Date() },
-    ]);
+  const addMessage = (text: string, isNarrative: boolean = false) => {
+    const newMessage: QueuedMessage = {
+      id: messageIdCounter.current++,
+      text,
+      timestamp: new Date(),
+      isNarrative,
+    };
+    setMessageQueue(prev => [...prev, newMessage]);
+  };
+
+  const handleTypewriterComplete = () => {
+    if (currentTypingMessage) {
+      setDisplayedMessages(prev => [...prev, currentTypingMessage]);
+      setCurrentTypingMessage(null);
+    }
   };
 
   const handleCommand = async (cmd: string) => {
     const trimmedCmd = cmd.trim();
     if (!trimmedCmd) return;
 
+    // Block commands if binary choice is pending
+    if (gameState.pendingChoice) {
+      addMessage("⚠️  You must choose [A] or [B] before continuing.", false);
+      return;
+    }
+
     // Add command to history
     setCommandHistory((prev) => [...prev, trimmedCmd]);
     setHistoryIndex(-1);
 
-    // Echo command
-    addMessage(`> ${trimmedCmd}`);
+    // Echo command (instant)
+    addMessage(`> ${trimmedCmd}`, false);
 
     // Parse and execute using CommandParser
     const result: CommandResult = await commandParser.current.parse(trimmedCmd, gameState);
@@ -96,13 +147,58 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
       onGameStateUpdate(newState);
     }
 
-    // Display result (clean, no duplication)
+    // Handle binary choice presentation
+    if (result.binaryChoice) {
+      onGameStateUpdate({ ...gameState, pendingChoice: result.binaryChoice });
+      setShowBinaryChoice(true);
+    }
+
+    // Display result
     if (result.message) {
-      addMessage(result.message);
+      // Narrative messages use typewriter, system messages are instant
+      const isNarrative = result.message.includes("You stand in") || 
+                         result.message.includes("NAVIGATION IN PROGRESS") ||
+                         result.message.includes("Welcome, Pioneer");
+      addMessage(result.message, isNarrative);
     }
 
     // Clear input
     setInput("");
+  };
+
+  const handleBinaryChoice = (choice: "A" | "B") => {
+    if (!gameState.pendingChoice) return;
+
+    const selectedOption = choice === "A" 
+      ? gameState.pendingChoice.optionA 
+      : gameState.pendingChoice.optionB;
+
+    // Apply alignment shift
+    const newAlignment = applyAlignmentShift(
+      gameState.alignment,
+      selectedOption.text,
+      selectedOption.alignmentImpact.lawChaos,
+      selectedOption.alignmentImpact.goodEvil
+    );
+
+    // Show result
+    addMessage(`\n[CHOICE ${choice}] ${selectedOption.text}`, false);
+    addMessage(selectedOption.resultText, true);
+
+    // Check if alignment changed
+    if (newAlignment.currentAlignment !== gameState.alignment.currentAlignment) {
+      addMessage(`\n🔄 ALIGNMENT SHIFT: ${gameState.alignment.currentAlignment} → ${newAlignment.currentAlignment}`, false);
+      addMessage(getAlignmentDescription(newAlignment.currentAlignment), true);
+    }
+
+    // Update game state
+    onGameStateUpdate({
+      ...gameState,
+      alignment: newAlignment,
+      pendingChoice: undefined,
+    });
+
+    setShowBinaryChoice(false);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -151,7 +247,8 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
-        {messages.map((msg) => (
+        {/* Displayed (completed) messages */}
+        {displayedMessages.map((msg) => (
           <div 
             key={msg.id} 
             className="whitespace-pre-wrap break-words"
@@ -160,6 +257,48 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
             {msg.text}
           </div>
         ))}
+        
+        {/* Currently typing message */}
+        {currentTypingMessage && (
+          <TypewriterText
+            text={currentTypingMessage.text}
+            speed={30}
+            onComplete={handleTypewriterComplete}
+            className="whitespace-pre-wrap break-words"
+          />
+        )}
+        
+        {/* Binary Choice Display */}
+        {gameState.pendingChoice && showBinaryChoice && (
+          <div className="border-2 border-terminal-bright p-4 mt-4 bg-terminal-bg">
+            <div className="text-terminal-bright font-bold mb-3">
+              ╔════════════════════════════════════════════════════════════╗
+              ║                     CHOICE REQUIRED                        ║
+              ╚════════════════════════════════════════════════════════════╝
+            </div>
+            <div className="mb-4 text-terminal-text">
+              {gameState.pendingChoice.frameText}
+            </div>
+            <div className="space-y-3">
+              <div 
+                className="border border-terminal-text p-3 cursor-pointer hover:bg-terminal-text hover:text-terminal-bg transition-colors"
+                onClick={() => handleBinaryChoice('A')}
+              >
+                <span className="text-terminal-bright font-bold">[A]</span> {gameState.pendingChoice.optionA.text}
+              </div>
+              <div 
+                className="border border-terminal-text p-3 cursor-pointer hover:bg-terminal-text hover:text-terminal-bg transition-colors"
+                onClick={() => handleBinaryChoice('B')}
+              >
+                <span className="text-terminal-bright font-bold">[B]</span> {gameState.pendingChoice.optionB.text}
+              </div>
+            </div>
+            <div className="text-terminal-dim text-xs mt-3 text-center">
+              Click or press [A] or [B] to choose
+            </div>
+          </div>
+        )}
+        
         <div ref={messagesEndRef} />
       </div>
 
@@ -177,8 +316,14 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
             placeholder="Type 'help' for commands..."
             autoComplete="off"
             spellCheck={false}
+            disabled={!!gameState.pendingChoice}
           />
         </div>
+        {gameState.pendingChoice && (
+          <div className="text-terminal-dim text-xs mt-2">
+            ⚠️  Choice pending - select [A] or [B] first
+          </div>
+        )}
       </div>
 
       {/* Pioneer Profile Modal */}
@@ -188,12 +333,12 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
           onClick={() => setShowProfileModal(false)}
         >
           <div 
-            className="bg-terminal-bg border-4 border-terminal-text p-8 max-w-2xl"
+            className="bg-terminal-bg border-4 border-terminal-text p-8 max-w-3xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-start mb-6">
               <h2 className="text-xl font-['Press_Start_2P'] text-terminal-bright">
-                PIONEER PROFILE
+                PIONEER MANIFEST
               </h2>
               <button 
                 onClick={() => setShowProfileModal(false)}
@@ -209,8 +354,9 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
                 <PioneerHUD manifest={gameState.character.pioneerManifest} size={400} />
               </div>
 
-              {/* Stats Display */}
+              {/* Stats & Info */}
               <div className="flex-1 space-y-4">
+                {/* Core Stats */}
                 <div className="border-2 border-terminal-text p-4">
                   <h3 className="text-terminal-bright mb-3 font-bold">CORE STATS</h3>
                   <div className="grid grid-cols-2 gap-3 font-mono text-sm">
@@ -247,12 +393,57 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
                   </div>
                 </div>
 
+                {/* Alignment Display */}
+                <div className="border-2 border-terminal-bright p-4 bg-terminal-bg">
+                  <h3 className="text-terminal-bright mb-3 font-bold">⚖️ ALIGNMENT</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-terminal-bright mb-2">
+                        {gameState.alignment.currentAlignment}
+                      </div>
+                      <div className="text-terminal-dim text-xs italic">
+                        {getAlignmentDescription(gameState.alignment.currentAlignment)}
+                      </div>
+                    </div>
+                    <div className="mt-4 space-y-2">
+                      <div>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span>Chaos</span>
+                          <span className="text-terminal-bright">{gameState.alignment.scores.lawChaos}</span>
+                          <span>Law</span>
+                        </div>
+                        <div className="h-2 bg-terminal-dim">
+                          <div 
+                            className="h-full bg-terminal-bright transition-all"
+                            style={{ width: `${((gameState.alignment.scores.lawChaos + 100) / 200) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span>Evil</span>
+                          <span className="text-terminal-bright">{gameState.alignment.scores.goodEvil}</span>
+                          <span>Good</span>
+                        </div>
+                        <div className="h-2 bg-terminal-dim">
+                          <div 
+                            className="h-full bg-terminal-bright transition-all"
+                            style={{ width: `${((gameState.alignment.scores.goodEvil + 100) / 200) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pioneer Info */}
                 <div className="border-2 border-terminal-text p-4">
                   <h3 className="text-terminal-bright mb-2 font-bold">PIONEER INFO</h3>
                   <div className="space-y-1 text-sm">
                     <p><span className="text-terminal-dim">Number:</span> #{gameState.character.pioneerNumber}</p>
                     <p><span className="text-terminal-dim">Generation:</span> G{gameState.character.pioneerManifest.generation}</p>
                     <p><span className="text-terminal-dim">Rank:</span> {gameState.character.pioneerManifest.rank}</p>
+                    <p><span className="text-terminal-dim">Choices Made:</span> {gameState.alignment.alignmentHistory.length}</p>
                   </div>
                 </div>
 
@@ -292,20 +483,14 @@ function StatDisplay({ label, value, tooltip }: { label: string; value: number; 
   );
 }
 
-// Fixed 62-character width ASCII border helper
-function createBorder(content: string): string {
-  const width = 60; // Content area (62 - 2 for borders)
-  const padded = content.padEnd(width).substring(0, width);
-  return `║${padded}║`;
-}
-
+// Welcome message with standardized 62-char borders
 function getWelcomeMessage(): string {
   const title = "THE GREAT TRANSIT";
   const paddedTitle = title.padStart((60 + title.length) / 2).padEnd(60);
   
   return `
 ╔════════════════════════════════════════════════════════════╗
-${createBorder(paddedTitle)}
+║${paddedTitle}║
 ╚════════════════════════════════════════════════════════════╝
 
 Welcome, Pioneer.
@@ -318,7 +503,7 @@ Your mission: Keep the ship alive until you reach the new galaxy.
 
 Type 'help' for available commands.
 Type 'look' to examine your surroundings.
-Type 'status' for a full ship systems report.
+Type 'status' for ship systems report.
 
 ───────────────────────────────────────────────────────────
 

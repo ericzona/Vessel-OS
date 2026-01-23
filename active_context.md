@@ -534,9 +534,187 @@ This phase focused on eliminating text corruption, standardizing all ASCII borde
 
 ---
 
-## Phase 4.6: Home Building - Safe Harbor (January 23, 2026)
+## Phase 5: Typewriter 2.0 & 9-Point Alignment System (January 23, 2026)
 
 **Status:** PRODUCTION READY ✅
+
+### Typewriter 2.0 - Buffered Message Queue
+
+**Implementation:** Complete message queue system for proper narrative pacing
+
+**Features:**
+- **30ms/char typing speed** - RPG-style "talking speed" for narrative immersion
+- **Buffered queue system** - Messages process one at a time, no text overlap
+- **Smart rendering** - Narrative messages use typewriter, system messages are instant
+- **Keyboard controls** - S/Enter to skip typing, N/Space for next message
+- **Zero corruption** - Clean string sanitization prevents undefined/duplication
+
+**Technical Details:**
+- Queue state management with `currentTypingMessage` and `displayedMessages`
+- TypewriterText component handles character-by-character reveal
+- Auto-detection of narrative vs system messages based on content
+- Smooth auto-scroll to latest message
+
+### 9-Point Alignment System (Identity Engine)
+
+**File:** `types/alignment.types.ts`
+
+**Core Concept:** Track Pioneer moral choices across two axes:
+- **Law/Chaos Axis** (-100 to +100): Order vs Freedom
+- **Good/Evil Axis** (-100 to +100): Altruism vs Selfishness
+
+**9 Alignments:**
+1. **Lawful-Good** - The Paladin
+2. **Lawful-Neutral** - The Judge
+3. **Lawful-Evil** - The Tyrant
+4. **Neutral-Good** - The Benefactor
+5. **True-Neutral** - The Wanderer
+6. **Neutral-Evil** - The Opportunist
+7. **Chaotic-Good** - The Rebel
+8. **Chaotic-Neutral** - The Free Spirit
+9. **Chaotic-Evil** - The Destroyer
+
+**Integration:**
+- Stored in `GameState.alignment` field
+- Initialized to True-Neutral (0, 0) on game start
+- Updates dynamically based on binary choices
+- Visible in Pioneer Profile [P] modal with visual bars
+- Accessible via `status a` command with full history
+
+### Binary Choice System
+
+**Implementation:** Location-based moral dilemmas that shape alignment
+
+**Trigger Mechanic:**
+- 30% chance when using `look` command
+- Choices are location-specific and contextual
+- Player must respond before continuing (input disabled during choice)
+
+**Choice Examples:**
+
+**Cryo Bay:**
+- Wake dying Pioneer (cost resources) vs Let them sleep (save supplies)
+- Impact: +10 Good / -8 Evil
+
+**Engineering:**
+- Boost reactor now (short-term gain) vs Conserve for future (long-term)
+- Impact: -8 Chaos / +8 Law
+
+**Bridge:**
+- Risk shortcut through nebula vs Stick to safe route
+- Impact: -10 Chaos / +8 Law
+
+**Cargo Hold:**
+- Take emergency rations vs Protect colony seeds
+- Impact: -7 Evil / +10 Good
+
+**User Experience:**
+- Clickable [A]/[B] options with hover effects
+- Keyboard shortcuts for instant selection
+- Result text displayed via typewriter for dramatic effect
+- Alignment shift notification if threshold crossed
+
+### Profile Modal Enhancement
+
+**Alignment Display Added:**
+- Current alignment prominently displayed
+- Visual progress bars for Law/Chaos and Good/Evil
+- Alignment description (e.g., "The Wanderer")
+- Total choices made counter
+- Located in [P] modal alongside stats
+
+### Status Command Refactor
+
+**New Menu System:**
+```
+status          → Show menu with [S][P][A] options
+status s        → Ship Status
+status p        → Pioneer Manifest
+status a        → Alignment & Quest Log
+```
+
+**Alignment Status View:**
+- Current alignment with description
+- Numeric scores on visual scales
+- Quest log (currently empty, ready for expansion)
+- Recent alignment shifts (last 5 choices)
+- Impact tracking for each choice
+
+### ASCII Border Standardization
+
+**Continued Enforcement:** All borders locked to 62-character width
+- Look command: ✅
+- Status command: ✅
+- Binary choice frames: ✅
+- Welcome message: ✅
+
+### Testing Results (January 23, 2026)
+
+**Typewriter System:**
+- ✅ 30ms/char reveal feels natural and engaging
+- ✅ No text duplication or "undefined" corruption
+- ✅ Queue processes messages sequentially
+- ✅ Skip controls work (S/Enter)
+- ✅ Next controls work (N/Space)
+
+**Alignment System:**
+- ✅ Choices properly track Law/Chaos and Good/Evil
+- ✅ Alignment calculation accurate across all 9 types
+- ✅ Profile modal displays alignment with visual bars
+- ✅ status a command shows full alignment history
+- ✅ Alignment shifts notify player of changes
+
+**Binary Choices:**
+- ✅ 30% trigger rate feels balanced
+- ✅ Location-specific choices add narrative depth
+- ✅ [A]/[B] keyboard shortcuts responsive
+- ✅ Clickable options work smoothly
+- ✅ Input blocked during pending choice
+- ✅ Results display via typewriter for drama
+
+**Files Created/Modified:**
+
+**New Files:**
+- `types/alignment.types.ts` - 9-point alignment system with calculations
+
+**Modified Files:**
+- `types/game.types.ts` - Added BinaryChoice interface and alignment field
+- `app/page.tsx` - Initialize alignment state
+- `components/Terminal.tsx` - Complete refactor with queue system and choice handling
+- `engine/commands/look.ts` - Added binary choice generation (30% chance)
+- `engine/commands/status.ts` - New menu system with alignment view
+- `components/TypewriterText.tsx` - Already had 30ms speed, keyboard controls working
+
+### NFT Metadata Integration (Future)
+
+The 9-point alignment system is designed to eventually populate NFT metadata:
+
+```json
+{
+  "pioneer_id": 1,
+  "alignment": "Chaotic-Good",
+  "law_chaos_score": -45,
+  "good_evil_score": 62,
+  "total_choices": 127,
+  "moral_archetype": "The Rebel"
+}
+```
+
+This creates unique, emergent identities based on player choices throughout the journey.
+
+### Performance Notes
+
+- Message queue prevents render loops
+- TypewriterText properly cleans up intervals
+- Alignment calculations are O(1)
+- No noticeable lag or stuttering
+- Smooth transitions between choices and results
+
+---
+
+## Phase 4.6: Home Building - Safe Harbor (January 23, 2026)
+
+**Status:** PRODUCTION READY ✅ (MAINTAINED)
 
 ### Pivot: From Survival to Creation
 

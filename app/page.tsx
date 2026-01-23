@@ -5,6 +5,7 @@ import Terminal from "@/components/Terminal";
 import { GameState, CompartmentId } from "@/types/game.types";
 import { generatePioneerManifest } from "@/engine/pioneer-generator";
 import { generateCharacterLoot } from "@/types/loot.types";
+import { createInitialAlignmentState } from "@/types/alignment.types";
 
 export default function Home() {
   const [gameState, setGameState] = useState<GameState | null>(null);
@@ -54,6 +55,7 @@ export default function Home() {
       gameTime: 0,
       isRunning: true,
       briggsConversations: 0,
+      alignment: createInitialAlignmentState(),
     };
 
     setGameState(initialState);

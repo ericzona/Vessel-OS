@@ -70,6 +70,8 @@ export interface GameState {
   isRunning: boolean;
   accomplishments?: import("@/engine/hidden-accomplishments").AccomplishmentState; // Hidden achievements
   briggsConversations?: number; // Track talks with Briggs for "Chatty Pioneer" achievement
+  alignment: import("@/types/alignment.types").AlignmentState; // 9-Point Alignment System (Identity Engine)
+  pendingChoice?: BinaryChoice; // Current choice awaiting player decision
 }
 
 export interface TimeDilatationState {
@@ -98,10 +100,29 @@ export enum ItemType {
   COMPONENT = "component",
 }
 
+export interface BinaryChoice {
+  id: string;
+  frameText: string; // Narrative context for the choice
+  optionA: ChoiceOption;
+  optionB: ChoiceOption;
+  location: CompartmentId; // Where this choice occurred
+}
+
+export interface ChoiceOption {
+  letter: "A" | "B";
+  text: string;
+  alignmentImpact: {
+    lawChaos: number; // -10 to +10
+    goodEvil: number; // -10 to +10
+  };
+  resultText: string; // What happens after choosing this option
+}
+
 export interface CommandResult {
   success: boolean;
   message: string;
   updates?: Partial<GameState>;
+  binaryChoice?: BinaryChoice; // Optional choice to present to player
 }
 
 /**

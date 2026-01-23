@@ -13,7 +13,8 @@
 **Phase 2: LOOT-TINDER CURATOR TOOL - COMPLETE** ✅  
 **Phase 3: NPC NARRATIVE SYSTEMS - COMPLETE** 🎭  
 **Phase 4: HIDDEN ACCOMPLISHMENTS - COMPLETE** 🏆  
-**Phase 4.4: TERMINAL POLISH & PIONEER PROFILE - COMPLETE** 🎨
+**Phase 4.4: TERMINAL POLISH & PIONEER PROFILE - COMPLETE** 🎨  
+**Phase 4.6: HOME BUILDING - SAFE HARBOR - COMPLETE** 🏠
 
 ✅ **MILESTONES ACHIEVED:**  
 - Spatial navigation with "Wait" mechanic  
@@ -530,3 +531,130 @@ This phase focused on eliminating text corruption, standardizing all ASCII borde
 - `app/page.tsx` - Complete refactor with proper state initialization
 
 **Result:** The Great Transit now has a polished, professional terminal interface with zero text corruption, perfect border alignment, and an immersive Pioneer Profile system. Ready for production deployment.
+
+---
+
+## Phase 4.6: Home Building - Safe Harbor (January 23, 2026)
+
+**Status:** PRODUCTION READY ✅
+
+### Pivot: From Survival to Creation
+
+This phase marks a fundamental shift in gameplay philosophy. The survival loop is officially over. The ship is now a **SAFE HARBOR**, and players can focus on building permanent structures in their personal space.
+
+### 1. Ship Decay Eliminated ✅
+
+**Implementation:** All passive system degradation set to 0.0
+
+**Changes to `engine/ship-heartbeat.ts`:**
+```typescript
+private readonly DEGRADATION = {
+  power: 0.0,  // DISABLED - Safe harbor
+  oxygen: 0.0, // DISABLED - Safe harbor
+  hull: 0.0,   // DISABLED - Safe harbor
+  cryo: 0.0,   // DISABLED - Safe harbor
+};
+```
+
+**Result:** The ship is now stable. No more constant repairs. Players can explore freely.
+
+### 2. Typewriter 2.0 - The RPG Feel ✅
+
+**File:** `components/TypewriterText.tsx`
+
+**Features:**
+- **Speed:** 30ms per character for cinematic pacing
+- **Clean String Sanitization:** `String(text || "").trim()` prevents undefined/corruption
+- **Skip Controls:** [S] or [Enter] to skip to end of current message
+- **Next Controls:** [N] or [Space] to trigger onComplete callback
+- **Input Protection:** Ignores keypresses when typing in input fields
+
+**Implementation:**
+- Replaced old typewriter with stable version
+- Uses `useRef` for interval management
+- Proper cleanup on unmount
+- Clear visual feedback for available controls
+
+**Result:** Zero text corruption, smooth RPG-style reveals, intuitive controls
+
+### 3. ASCII Border Lockdown ✅
+
+**Continued use of `engine/ascii-border.ts` utility:**
+- All borders standardized to 62-character width
+- Perfect vertical alignment across all commands
+- New quarters command uses the same system
+
+**Result:** Consistent, professional borders throughout the game
+
+### 4. Personal Quarters & Warp-Logic ✅
+
+**New Command:** `quarters` (aliases: `q`, `room`, `home`)
+
+**File Created:** `engine/commands/quarters.ts`
+
+**Description:**
+> "A space-time anomaly makes this room feel cavernous. The walls shimmer  
+> with possibility, as if reality itself is waiting for your command.  
+> This is your blank canvas in the void."
+
+**Features:**
+- **Quarters Lock:** Room secured by Pioneer-### (shows player's number)
+- **Warp-Logic Hint:** Time flows differently here - resources can become structures
+- **Future Hooks:** Build, decorate, examine commands (marked as COMING SOON)
+- **Personal Space:** Only you can modify this space, creations persist
+
+**Implementation:**
+- Registered in command registry
+- Uses standardized ASCII borders
+- Returns proper CommandResult with location update
+- Designed for future expansion (home building mechanics)
+
+**Lore Integration:**
+> "Time flows differently here. Resources gathered in the void  
+> can be transformed into permanent structures. This is where  
+> Pioneers become Architects."  
+> - Ship's AI, Fragment 2847-Q
+
+### 5. Briggs Narrative Update ✅
+
+**New Safe Harbor Greeting:**
+> "Ship's holding together for once, Popsicle! Why don't you go decorate your quarters?"
+
+**File Modified:** `engine/npc/briggs-sayings.ts`
+
+Added to greeting rotation to reflect the new stable environment.
+
+**Result:** Briggs acknowledges the safe harbor and encourages exploration
+
+### Testing Results (January 23, 2026)
+
+**Code Changes Complete:**
+- ✅ Ship decay disabled (all systems at 0.0 degradation)
+- ✅ Typewriter 2.0 with clean sanitization and controls
+- ✅ Quarters command created and registered
+- ✅ Briggs dialogue updated
+- ✅ ASCII borders locked to 62-char standard
+
+**Files Created:**
+- `engine/commands/quarters.ts` - New personal space command
+
+**Files Modified:**
+- `engine/ship-heartbeat.ts` - Disabled all passive decay
+- `components/TypewriterText.tsx` - Rebuilt with sanitization and controls
+- `engine/commands/index.ts` - Registered quarters command
+- `engine/npc/briggs-sayings.ts` - Added safe harbor greeting
+
+**Gameplay Transformation:**
+- Players no longer fight constant decay
+- Focus shifts from survival to exploration and building
+- Personal quarters provide a blank canvas for future home-building mechanics
+- Foundation laid for crafting, decorating, and persistent structures
+
+**Next Steps - Home Building Expansion:**
+1. Build command - Construction interface for quarters
+2. Decorate command - Personalization system
+3. Inventory system - Store and manage resources
+4. Crafting recipes - Transform $SCRAP into furniture/decorations
+5. Persistence layer - Save/load quarters state
+
+**Result:** Phase 4.6 complete. The Great Transit is now a safe harbor with personal quarters ready for the home-building era. Survival is over. Creation begins.

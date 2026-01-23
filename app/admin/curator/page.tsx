@@ -177,20 +177,10 @@ export default function CuratorPage() {
           <div className="text-sm opacity-60 mt-1">
             Current: {currentIndex + 1} of {totalFiles} | Remaining: {totalFiles - currentIndex - sortedCount}
           </div>
-          {feedback && (
-            <div className="mt-2 text-lg font-bold text-yellow-300 animate-pulse">
-              {feedback}
-            </div>
-          )}
-          {processing && (
-            <div className="mt-2 text-sm text-yellow-500">
-              Processing...
-            </div>
-          )}
         </div>
 
         {/* Current Image */}
-        <div className="border-2 border-green-500 p-8 mb-6 flex items-center justify-center bg-gray-900 min-h-[400px]">
+        <div className="border-2 border-green-500 p-8 mb-6 flex items-center justify-center bg-gray-900 min-h-[400px] relative">
           {currentImage ? (
             <div className="relative w-64 h-64 border border-green-500">
               {imageError ? (
@@ -210,6 +200,24 @@ export default function CuratorPage() {
                   className="w-full h-full object-contain"
                   onError={() => setImageError(true)}
                 />
+              )}
+              
+              {/* Success/Feedback Overlay - positioned above image */}
+              {feedback && (
+                <div className="absolute -top-12 left-0 right-0 bg-black bg-opacity-90 border-2 border-yellow-300 p-2 text-center">
+                  <div className="text-base font-bold text-yellow-300 animate-pulse">
+                    {feedback}
+                  </div>
+                </div>
+              )}
+              
+              {/* Processing Indicator */}
+              {processing && (
+                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-80 p-1 text-center">
+                  <div className="text-xs text-yellow-500">
+                    Processing...
+                  </div>
+                </div>
               )}
             </div>
           ) : (

@@ -41,7 +41,7 @@ export default function Home() {
       },
       inventory: {
         items: [],
-        maxSlots: 10,
+        maxSlots: 20,
       },
       credits: 0,
       scrapBalance: 10,

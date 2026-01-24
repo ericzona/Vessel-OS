@@ -94,27 +94,34 @@ export default function TypewriterText({
   // Global keyboard listener for controls
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      // Ignore if typing in input field
-      if (document.activeElement?.tagName === 'INPUT') return;
+      // CRITICAL: Always ignore if typing in input field or if textarea/other input
+      const activeEl = document.activeElement;
+      if (activeEl?.tagName === 'INPUT' || 
+          activeEl?.tagName === 'TEXTAREA' ||
+          (activeEl as HTMLElement)?.isContentEditable) {
+        return;
+      }
       
       const key = e.key.toLowerCase();
       
-      // [S] or [Enter] = Skip to end
-      if (key === 's' || e.key === 'Enter') {
-        if (!isComplete) {
+      // [S] = Skip to end of current typing
+      if (key === 's') {
+        e.preventDefault();
+        if (currentIndexRef.current < sanitizedText.length) {
+          // Still typing, skip to end
           skipToEnd();
         }
       }
-      // [N] or [Space] = Next message
-      else if (key === 'n' || e.key === ' ') {
-        e.preventDefault(); // Prevent space from scrolling
-        handleNext();
+      // [N] or [Space] = Next message (only when complete)
+      else if ((key === 'n' || e.key === ' ') && isComplete && onComplete) {
+        e.preventDefault();
+        onComplete();
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isComplete, sanitizedText]);
+  }, [isComplete, onComplete, sanitizedText, skipToEnd]);
 
   return (
     <div className={className}>

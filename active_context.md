@@ -534,9 +534,252 @@ This phase focused on eliminating text corruption, standardizing all ASCII borde
 
 ---
 
-## Phase 5: Typewriter 2.0 & 9-Point Alignment System (January 23, 2026)
+## Phase 5.2: Quiet Depth - Subtle Decision Trees (January 23, 2026)
 
 **Status:** PRODUCTION READY ✅
+
+### Philosophy: Quiet Depth Over Heavy-Handed UI
+
+This phase implements a "quiet depth" approach to narrative choices, hiding complexity in subtle inspect commands rather than forcing explicit binary choices on players.
+
+### 1. Keyboard Listener Fix ✅
+
+**Problem:** [S] skip and [N] next keys were not working properly during typewriter animation.
+
+**Solution:**
+- Fixed TypewriterText keyboard listeners to properly check if still typing before allowing skip
+- [S] now only skips if `currentIndexRef.current < sanitizedText.length` (still typing)
+- [N]/[Space] only trigger onComplete when `isComplete === true`
+- All listeners properly ignore events when input field is focused
+
+**Files Modified:**
+- `components/TypewriterText.tsx` - Fixed keyboard event logic with proper state checks
+
+**Result:** [S] skips typing, [N] advances to next message, both work reliably
+
+### 2. Removed Choice Eyesore ✅
+
+**Before:** Large white box with "CHOICE REQUIRED" header dominated the screen
+
+**After:** Subtle single-line choice display tucked into message flow
+
+**Changes to Terminal:**
+- Removed bordered box, large header, and clickable divs
+- Replaced with minimal `text-sm` line: `[A] option text | [B] option text`
+- Choices blend into terminal aesthetic
+- Still functional with [A]/[B] keyboard shortcuts
+
+**Files Modified:**
+- `components/Terminal.tsx` - Replaced binary choice display with subtle version
+
+**Result:** Choices are present but not screaming for attention
+
+### 3. Decision Tree System ✅
+
+**File Created:** `engine/narrative/decision-trees.ts`
+
+**Implementation:** Abstract thought experiment trees triggered by inspect commands
+
+**Features:**
+- **Tree Structure:** Each tree has multiple connected nodes
+- **Node Branching:** Choosing [A] or [B] leads to different follow-up questions
+- **Silent Tracking:** Law/Chaos and Good/Evil scores update in background
+- **Rewards:** Final nodes unlock features, coordinates, access codes, etc.
+
+**Example Trees:**
+
+**Console Tree** (inspect console on bridge):
+1. Trust algorithms vs trust instincts → 
+2a. Share coordinates vs protect them → Unlock HIDDEN SECTOR ALPHA/BETA
+2b. Follow rules vs break to save → Unlock LEGACY PROTOCOLS or MEDIC'S OVERRIDE
+
+**Pod Tree** (inspect pod in cryo bay):
+1. Life worth = contribution vs existence → 
+2a. Sacrifice one vs refuse choice → Unlock TACTICAL PROTOCOLS or SECRET COMPARTMENT
+2b. Awake alone vs asleep dreaming → Unlock VOID MEDITATION or DREAM ARCHIVE
+
+**Alignment Impact:**
+- Each choice silently shifts lawChaos (-10 to +10) and goodEvil (-10 to +10)
+- Players see results but not explicit "you gained +5 Law" notifications
+- Alignment changes appear in Profile [P] modal as bubble drift on compass
+
+### 4. Inspect Command ✅
+
+**File Created:** `engine/commands/inspect.ts`
+
+**Trigger Mechanic:** Typing `inspect <target>` examines objects and triggers decision trees
+
+**Functionality:**
+- Checks if target triggers a decision tree (e.g., `inspect console`)
+- If yes: Presents first node of tree as binary choice
+- If no: Returns descriptive text about the object
+
+**Available Inspectables by Location:**
+- **Cryo Bay:** pod, frost, console
+- **Bridge:** console, chair, viewport
+- **Cargo Hold:** mural, crates, equipment
+- **Engineering:** reactor, drones, conduits
+
+**Integration:**
+- Uses `getTreeByTrigger()` to find matching tree
+- Converts DecisionNode to BinaryChoice format
+- Returns choice in CommandResult for Terminal to handle
+
+**Result:** Depth hidden in exploration, not forced on player
+
+### 5. Inventory System ✅
+
+**File Created:** `engine/commands/inventory.ts`
+
+**Command:** `inventory` (aliases: `inv`, `i`, `items`)
+
+**Display:**
+- Shows collected items with quantities
+- Displays capacity (e.g., "5/20 slots used")
+- Lists unlocked features from decision tree rewards
+- Empty state encourages exploration with inspect
+
+**Game State Integration:**
+- Added `inventory` field to GameState
+- Structure: `{ items: InventoryItem[], maxSlots: number }`
+- Initialized with 20 slots, empty items array
+
+**Future Ready:**
+- Designed to pull from item-registry.json (4,306 curated items)
+- Item types: SEED, MATERIAL, TOOL, COMPONENT
+- Quantity tracking for stackable items
+
+**Files Modified:**
+- `types/game.types.ts` - InventoryState and InventoryItem interfaces already existed
+- `app/page.tsx` - Initialize inventory in initial game state
+- `engine/commands/index.ts` - Register inventory and inspect commands
+
+### 6. Testing Results (January 23, 2026)
+
+**Keyboard Controls:**
+- ✅ [S] skips current typing animation
+- ✅ [N]/[Space] advances to next message when complete
+- ✅ Both ignore input field focus properly
+- ✅ No interference with command execution
+
+**Subtle Choices:**
+- ✅ Single-line display blends with terminal aesthetic
+- ✅ No visual "eyesore" demanding attention
+- ✅ [A]/[B] shortcuts still work
+- ✅ Choices feel optional, not forced
+
+**Decision Trees:**
+- ✅ `inspect console` triggers Console Tree
+- ✅ `inspect pod` triggers Pod Tree
+- ✅ Questions progress through nodes based on choices
+- ✅ Rewards display at final node
+- ✅ Alignment shifts silently in background
+
+**Inventory:**
+- ✅ `inventory` command displays empty state with helpful tip
+- ✅ Unlocks from choices appear in separate section
+- ✅ Capacity tracking accurate
+- ✅ Ready for item collection integration
+
+**Files Created:**
+- `engine/narrative/decision-trees.ts` - Tree system with Console and Pod trees
+- `engine/commands/inspect.ts` - Inspection system that triggers trees
+- `engine/commands/inventory.ts` - Inventory display command
+
+**Files Modified:**
+- `components/TypewriterText.tsx` - Fixed [S]/[N] keyboard logic
+- `components/Terminal.tsx` - Minimal choice display
+- `engine/commands/index.ts` - Registered new commands
+- `app/page.tsx` - Initialize inventory in game state
+
+**User Experience Transformation:**
+- Depth is discovered, not advertised
+- Choices emerge from curiosity (inspect) not forced interaction (look)
+- Alignment tracked invisibly, revealed in Profile compass
+- Inventory prepares for eventual item collection from sorted 4,306 assets
+
+---
+
+## Phase 5.1: Terminal Freeze Fix & Visual Moral Compass (January 23, 2026)
+
+**Status:** PRODUCTION READY ✅ (MAINTAINED)
+
+### Critical Bug Fix: Terminal Input Lock
+
+**Root Cause:** The TypewriterText component's keyboard listeners were capturing Enter key presses even when the input field was focused, preventing command execution.
+
+**Solution Implemented:**
+- Modified TypewriterText to check `document.activeElement` before handling keyboard events
+- Removed Enter key from typewriter skip controls (only [S] now skips)
+- Added checks for INPUT, TEXTAREA, and contentEditable elements
+- Input field now properly accepts commands during and after typewriter animation
+
+**Files Modified:**
+- `components/TypewriterText.tsx` - Fixed keyboard listener to ignore active input fields
+
+**Result:** Terminal input unlocked, $ prompt fully functional during typewriter animation
+
+### Visual Moral Compass (The 2D Grid)
+
+**File Created:** `components/MoralCompass.tsx`
+
+**Implementation:** Replaced text-based alignment display with spatial 2D coordinate grid
+
+**Features:**
+- **200x200px Grid** with crosshair dividers
+- **Drifting Bubble/Puck** shows current alignment position
+- **Animated transitions** (700ms ease-out) when alignment shifts
+- **Single-letter labels**: L (Law), C (Chaos), G (Good), E (Evil)
+- **Coordinate readout**: Displays exact (lawChaos, goodEvil) values
+- **Quadrant legend**: L+G=Paladin, C+G=Rebel, L+E=Tyrant, C+E=Destroyer
+- **Pulse effect**: Glowing bubble with animate-ping for visual feedback
+
+**Coordinate Mapping:**
+- X-axis: Law (-100, left) → Chaos (+100, right)
+- Y-axis: Evil (-100, bottom) → Good (+100, top)
+- Center (0, 0) = True Neutral
+- Chaotic-Good = (100, 100) = top-right quadrant
+
+**Profile Modal Integration:**
+- Removed explicit alignment text (e.g., "True-Neutral")
+- Compass shows Pioneer's spatial journey
+- Alignment description shown below compass as subtitle
+- Visual feedback when bubble drifts after binary choices
+
+### Testing Results (January 23, 2026)
+
+**Terminal Unlock:**
+- ✅ Input field accepts commands during typewriter animation
+- ✅ Enter key executes commands properly
+- ✅ [S] skips typewriter without affecting input
+- ✅ No more frozen terminal on welcome screen
+
+**Visual Compass:**
+- ✅ Bubble initializes at center (0, 0) for True Neutral
+- ✅ Smooth 700ms animation when alignment shifts
+- ✅ Grid lines and labels properly positioned
+- ✅ Coordinate readout accurate
+- ✅ Pulse effect adds life to the bubble
+- ✅ Quadrant legend helps interpret position
+
+**Files Created:**
+- `components/MoralCompass.tsx` - 2D visual alignment grid
+
+**Files Modified:**
+- `components/TypewriterText.tsx` - Fixed input lock bug
+- `components/Terminal.tsx` - Integrated MoralCompass into Profile modal
+
+**User Experience:**
+- Players can now see their moral journey spatially
+- Each binary choice causes visible bubble drift
+- Ambiguous single-letter labels encourage exploration
+- Coordinate grid feels like a navigation tool
+
+---
+
+## Phase 5: Typewriter 2.0 & 9-Point Alignment System (January 23, 2026)
+
+**Status:** PRODUCTION READY ✅ (MAINTAINED)
 
 ### Typewriter 2.0 - Buffered Message Queue
 

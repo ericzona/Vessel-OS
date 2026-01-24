@@ -10,6 +10,7 @@ import { getAlignmentDescription } from "@/types/alignment.types";
 import { applyAlignmentShift } from "@/types/alignment.types";
 import PioneerHUD from "./PioneerHUD";
 import TypewriterText from "./TypewriterText";
+import MoralCompass from "./MoralCompass";
 
 interface TerminalProps {
   gameState: GameState;
@@ -268,33 +269,11 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
           />
         )}
         
-        {/* Binary Choice Display */}
+        {/* Binary Choice Display - Subtle */}
         {gameState.pendingChoice && showBinaryChoice && (
-          <div className="border-2 border-terminal-bright p-4 mt-4 bg-terminal-bg">
-            <div className="text-terminal-bright font-bold mb-3">
-              ╔════════════════════════════════════════════════════════════╗
-              ║                     CHOICE REQUIRED                        ║
-              ╚════════════════════════════════════════════════════════════╝
-            </div>
-            <div className="mb-4 text-terminal-text">
-              {gameState.pendingChoice.frameText}
-            </div>
-            <div className="space-y-3">
-              <div 
-                className="border border-terminal-text p-3 cursor-pointer hover:bg-terminal-text hover:text-terminal-bg transition-colors"
-                onClick={() => handleBinaryChoice('A')}
-              >
-                <span className="text-terminal-bright font-bold">[A]</span> {gameState.pendingChoice.optionA.text}
-              </div>
-              <div 
-                className="border border-terminal-text p-3 cursor-pointer hover:bg-terminal-text hover:text-terminal-bg transition-colors"
-                onClick={() => handleBinaryChoice('B')}
-              >
-                <span className="text-terminal-bright font-bold">[B]</span> {gameState.pendingChoice.optionB.text}
-              </div>
-            </div>
-            <div className="text-terminal-dim text-xs mt-3 text-center">
-              Click or press [A] or [B] to choose
+          <div className="mt-4 mb-2">
+            <div className="mb-2 text-terminal-dim text-sm">
+              <span className="text-terminal-bright">[A]</span> {gameState.pendingChoice.optionA.text} | <span className="text-terminal-bright">[B]</span> {gameState.pendingChoice.optionB.text}
             </div>
           </div>
         )}
@@ -393,45 +372,13 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
                   </div>
                 </div>
 
-                {/* Alignment Display */}
+                {/* Moral Compass - Visual 2D Grid */}
                 <div className="border-2 border-terminal-bright p-4 bg-terminal-bg">
-                  <h3 className="text-terminal-bright mb-3 font-bold">⚖️ ALIGNMENT</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-terminal-bright mb-2">
-                        {gameState.alignment.currentAlignment}
-                      </div>
-                      <div className="text-terminal-dim text-xs italic">
-                        {getAlignmentDescription(gameState.alignment.currentAlignment)}
-                      </div>
-                    </div>
-                    <div className="mt-4 space-y-2">
-                      <div>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span>Chaos</span>
-                          <span className="text-terminal-bright">{gameState.alignment.scores.lawChaos}</span>
-                          <span>Law</span>
-                        </div>
-                        <div className="h-2 bg-terminal-dim">
-                          <div 
-                            className="h-full bg-terminal-bright transition-all"
-                            style={{ width: `${((gameState.alignment.scores.lawChaos + 100) / 200) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span>Evil</span>
-                          <span className="text-terminal-bright">{gameState.alignment.scores.goodEvil}</span>
-                          <span>Good</span>
-                        </div>
-                        <div className="h-2 bg-terminal-dim">
-                          <div 
-                            className="h-full bg-terminal-bright transition-all"
-                            style={{ width: `${((gameState.alignment.scores.goodEvil + 100) / 200) * 100}%` }}
-                          />
-                        </div>
-                      </div>
+                  <h3 className="text-terminal-bright mb-3 font-bold">⚖️ MORAL COMPASS</h3>
+                  <div className="flex flex-col items-center">
+                    <MoralCompass scores={gameState.alignment.scores} />
+                    <div className="mt-4 text-center text-xs text-terminal-dim italic">
+                      {getAlignmentDescription(gameState.alignment.currentAlignment)}
                     </div>
                   </div>
                 </div>

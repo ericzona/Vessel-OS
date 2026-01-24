@@ -5,7 +5,7 @@
  */
 
 import { Command, CommandResult, CommandContext, CommandCategory } from "@/types/game.types";
-import { getBriggsSaying, getBriggsGreeting, getBriggsFarewell } from "@/engine/npc/briggs-sayings";
+import { getRandomBriggsSaying, getBriggsGreeting } from "@/engine/npc/briggs-sayings";
 import {
   createAccomplishmentState,
   incrementAccomplishment,
@@ -219,10 +219,9 @@ SHIP INCIDENT LOG - YEAR 147:
       const currentDialogue = repeatDialogues[(dialogueIndex - 1) % repeatDialogues.length];
       dialogueIndex++;
       
-      // Add a random saying from Briggs' personality mix
-      const saying = getBriggsSaying();
-      const sayingPrefix = saying.type === 'pirate' ? '🏴‍☠️' : saying.type === 'prospector' ? '⛏️' : '📜';
-      const sayingFooter = `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${sayingPrefix} BRIGGS' WISDOM:\n"${saying.text}"`;
+      // Add a random saying from Briggs
+      const saying = getRandomBriggsSaying();
+      const sayingFooter = `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💀 BRIGGS' WISDOM:\n"${saying.text}"`;
       
       let finalMessage = currentDialogue + sayingFooter;
       

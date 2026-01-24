@@ -1,119 +1,115 @@
 /**
- * BRIGGS - "The Sayer of Sayings"
+ * Briggs "The Void Prospector" - NPC Personality System
+ * Tone: Han Solo meets Klondike Prospector
+ * Gruff, suspicious, cynical, yet strangely charming and observant
  * 
- * A grizzled NPC with a unique personality blend:
- * - 40% Pirate (nautical, treasure-focused, "arr" energy)
- * - 40% Prospector (mining wisdom, frontier mentality, "strike it rich")
- * - 20% Confucius (philosophical, cryptic wisdom)
- * 
- * Briggs dispenses comical yet oddly wise advice to Pioneers navigating The Great Transit.
+ * NO pirate clichés. NO "Yarrr". NO Confucius wisdom.
+ * Space Pirate Wisdom: Direct, practical, darkly humorous
  */
 
 export interface BriggsSaying {
   text: string;
-  type: 'pirate' | 'prospector' | 'confucius';
-}
-
-// 40% Pirate sayings (nautical wisdom)
-const PIRATE_SAYINGS: string[] = [
-  "Arrr, the void be vast, but a Pioneer's resolve be vaster!",
-  "Dead men tell no tales, but dead ships tell even fewer. Keep yer hull patched, savvy?",
-  "The stars be yer treasure map, mate. X marks the colony!",
-  "A smooth void never made a skilled captain. Embrace the chaos!",
-  "Aye, the cryo pods be like a pirate's rum - ye never know what ye'll wake up to!",
-  "Batten down the hatches! The cosmos don't give second chances.",
-  "Every Pioneer be the captain of their own destiny. Chart yer course!",
-  "The void's darker than a kraken's belly, but yer ship's got teeth!",
-];
-
-// 40% Prospector sayings (frontier mining wisdom)
-const PROSPECTOR_SAYINGS: string[] = [
-  "There's gold in them stars, partner! Keep diggin' through the void.",
-  "A good claim ain't worth nothin' if yer pick breaks. Repair yer tools!",
-  "The frontier don't suffer fools. Check yer oxygen 'fore ye check yer pride.",
-  "Strike while the iron's hot, but don't strike when the hull's cold!",
-  "Every rock tells a story, if ye listen close enough. Mine wisely.",
-  "Ain't no shame in restin' at camp. Subjective time's cheaper than a funeral.",
-  "The richest vein runs deep, Pioneer. Don't give up on the first dry shaft.",
-  "Out here, a man's worth is measured in grit and $SCRAP. Keep both close.",
-];
-
-// 20% Confucius sayings (philosophical wisdom)
-const CONFUCIUS_SAYINGS: string[] = [
-  "The ship that repairs itself today, sails tomorrow.",
-  "When the void speaks, only the silent hear its secrets.",
-  "A journey of a thousand light-years begins with a single repair.",
-  "The wise Pioneer knows: time flows faster when you're busy fixing leaks.",
-];
-
-/**
- * Returns a random saying from Briggs based on personality distribution
- * 40% chance pirate, 40% chance prospector, 20% chance philosophical
- */
-export function getBriggsSaying(): BriggsSaying {
-  const roll = Math.random();
-  
-  if (roll < 0.4) {
-    // 40% Pirate
-    const saying = PIRATE_SAYINGS[Math.floor(Math.random() * PIRATE_SAYINGS.length)];
-    return { text: saying, type: 'pirate' };
-  } else if (roll < 0.8) {
-    // 40% Prospector (0.4 to 0.8)
-    const saying = PROSPECTOR_SAYINGS[Math.floor(Math.random() * PROSPECTOR_SAYINGS.length)];
-    return { text: saying, type: 'prospector' };
-  } else {
-    // 20% Confucius (0.8 to 1.0)
-    const saying = CONFUCIUS_SAYINGS[Math.floor(Math.random() * CONFUCIUS_SAYINGS.length)];
-    return { text: saying, type: 'confucius' };
-  }
+  category: "cynical" | "wisdom" | "humor" | "observation";
 }
 
 /**
- * Get a greeting from Briggs (used when first encountering him)
+ * Briggs' Sayings - Space Pirate Wisdom
+ * 10 original sayings that feel authentic to a grizzled void prospector
  */
-export function getBriggsGreeting(): string {
+export const BRIGGS_SAYINGS: BriggsSaying[] = [
+  {
+    text: "The void doesn't have a conscience, kid. That's why I do.",
+    category: "wisdom",
+  },
+  {
+    text: "Trust is expensive out here. I'm on a budget.",
+    category: "cynical",
+  },
+  {
+    text: "People who talk about 'the journey' never had to mine asteroids for breakfast.",
+    category: "humor",
+  },
+  {
+    text: "You want answers? The universe doesn't give refunds on bad questions.",
+    category: "observation",
+  },
+  {
+    text: "I've seen empires fall over less $SCRAP than what's floating outside that viewport.",
+    category: "wisdom",
+  },
+  {
+    text: "Hope's a luxury. Paranoia's kept me alive longer.",
+    category: "cynical",
+  },
+  {
+    text: "The ship doesn't care if you're having an existential crisis. Neither do I.",
+    category: "observation",
+  },
+  {
+    text: "Out here, everyone's running from something. Question is: what are *you* running from?",
+    category: "wisdom",
+  },
+  {
+    text: "The Great Crash wasn't an accident. But nobody pays me to ask questions.",
+    category: "cynical",
+  },
+  {
+    text: "Pioneers don't get remembered for being nice. They get remembered for surviving.",
+    category: "wisdom",
+  },
+];
+
+/**
+ * Get a random Briggs saying
+ */
+export function getRandomBriggsSaying(): BriggsSaying {
+  return BRIGGS_SAYINGS[Math.floor(Math.random() * BRIGGS_SAYINGS.length)];
+}
+
+/**
+ * Briggs' Greeting - Context-aware based on game state
+ */
+export function getBriggsGreeting(gameState?: any): string {
   const greetings = [
-    "Well, well! Another Pioneer seekin' wisdom from ol' Briggs, eh?",
-    "Ahoy there, mate! Come fer a tale or just lost in the void?",
-    "Partner! Pull up a crate. Briggs has got words fer ye.",
-    "Arrr! The void's lonely, but ye found the right crusty ol' dog to talk to!",
-    "Ship's holding together for once, Popsicle! Why don't you go decorate your quarters?",
+    "Yeah? Make it quick. I got inventory to sort.",
+    "Still breathing, Popsicle? Impressive.",
+    "You need something, or are you just bored?",
+    "Another Pioneer awake. Great. More mouths to feed.",
+    "What now?",
+    "Ship's holding together for once. Miracle or curse, I can't tell.",
   ];
+  
   return greetings[Math.floor(Math.random() * greetings.length)];
 }
 
 /**
- * Get Briggs' farewell message
+ * Briggs' Response to 'help' or general inquiry
  */
-export function getBriggsFarewell(): string {
-  const farewells = [
-    "Fair winds and full sails, Pioneer!",
-    "May yer hull stay patched and yer oxygen flow steady!",
-    "Keep yer eyes on the stars and yer hands on the controls, mate.",
-    "Until we meet again in this cold, dark void!",
-  ];
-  return farewells[Math.floor(Math.random() * farewells.length)];
+export function getBriggsHelpResponse(): string {
+  return `Look, I'm a Quartermaster, not a tour guide. 
+
+What you need to know:
+- There's $SCRAP floating in the void. You mine it, I track it.
+- Ship systems fail. You repair them with subjective time.
+- The void doesn't care about your feelings.
+
+That's the basics. Figure out the rest yourself.`;
 }
 
 /**
- * Get all sayings (useful for debugging or displaying full collection)
+ * Briggs' Response to specific inquiries
  */
-export function getAllSayings(): BriggsSaying[] {
-  return [
-    ...PIRATE_SAYINGS.map(text => ({ text, type: 'pirate' as const })),
-    ...PROSPECTOR_SAYINGS.map(text => ({ text, type: 'prospector' as const })),
-    ...CONFUCIUS_SAYINGS.map(text => ({ text, type: 'confucius' as const })),
-  ];
-}
-
-/**
- * Get the total count of sayings available
- */
-export function getSayingsCount(): { total: number; pirate: number; prospector: number; confucius: number } {
-  return {
-    total: PIRATE_SAYINGS.length + PROSPECTOR_SAYINGS.length + CONFUCIUS_SAYINGS.length,
-    pirate: PIRATE_SAYINGS.length,
-    prospector: PROSPECTOR_SAYINGS.length,
-    confucius: CONFUCIUS_SAYINGS.length,
+export function getBriggsResponse(topic: string): string {
+  const responses: Record<string, string> = {
+    crash: "Asteroids came from nowhere. Right before Lootopian orbit. Too convenient, if you ask me. But nobody ever does.",
+    void: "The void's patient. It'll wait for you to make a mistake. Always does.",
+    pioneers: "2,847 frozen Pioneers. Most won't make it. You probably won't either. But you're here talking to me, so maybe you're stubborn enough.",
+    ship: "This bucket of bolts held together through the crash. That's either luck or spite. I'm betting spite.",
+    loot: "Lootopia's gone. Homeworld's a memory. All we got left are seeds and hope. I'm not big on hope.",
+    captain: "Captain Vess didn't make it to the pods. Found them in the command chair, frozen solid. Left a message for the legacy holders. Touching, I guess.",
+    scrap: "$SCRAP's the only currency that matters now. Trade it, hoard it, spend it. Just don't come crying when you run out.",
+    default: "I don't know everything, kid. Just most things.",
   };
+  
+  return responses[topic.toLowerCase()] || responses.default;
 }

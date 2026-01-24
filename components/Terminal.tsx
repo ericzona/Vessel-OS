@@ -126,6 +126,12 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
     const trimmedCmd = cmd.trim();
     if (!trimmedCmd) return;
 
+    // If typing animation is active, CANCEL it immediately
+    if (currentTypingMessage) {
+      setDisplayedMessages(prev => [...prev, currentTypingMessage]);
+      setCurrentTypingMessage(null);
+    }
+
     // Block commands if binary choice is pending
     if (gameState.pendingChoice) {
       addMessage("⚠️  You must choose [A] or [B] before continuing.", false);
@@ -295,7 +301,7 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
             placeholder="Type 'help' for commands..."
             autoComplete="off"
             spellCheck={false}
-            disabled={!!gameState.pendingChoice}
+            disabled={false}
           />
         </div>
         {gameState.pendingChoice && (

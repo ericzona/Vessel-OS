@@ -1,30 +1,40 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
 
 interface TypewriterTextProps {
   text: string;
   speed?: number; // milliseconds per character
   onComplete?: () => void;
+  onSkip?: () => void;
+  onNext?: () => void;
   className?: string;
 }
 
+export interface TypewriterHandle {
+  skip: () => void;
+  next: () => void;
+  isTyping: () => boolean;
+  isComplete: () => boolean;
+}
+
 /**
- * Typewriter 2.0 - The RPG Feel
- * Phase 4.6: Stable typewriter with clean string sanitization
+ * Typewriter 3.0 - Character-by-Character RPG Reveal
  * 
- * Controls:
- * - [S] or [Enter] = Skip to end of current message
- * - [N] or [Space] = Next message (triggers onComplete)
- * 
- * Speed: 30ms/char for RPG-style pacing
+ * Features:
+ * - Reveals exactly ONE character every 25ms
+ * - No scanning effect - pure left-to-right reveal
+ * - Exposes skip() and next() methods for external controls
+ * - Mobile-friendly with explicit button support
  */
-export default function TypewriterText({ 
+const TypewriterText = forwardRef<TypewriterHandle, TypewriterTextProps>(({ 
   text, 
-  speed = 30, 
+  speed = 25, 
   onComplete,
+  onSkip,
+  onNext,
   className = ""
-}: TypewriterTextProps) {
+}, ref) => {
   const [displayedText, setDisplayedText] = useState("");
   const [isComplete, setIsComplete] = useState(false);
   const currentIndexRef = useRef(0);
@@ -41,15 +51,25 @@ export default function TypewriterText({
     setDisplayedText(sanitizedText);
     setIsComplete(true);
     currentIndexRef.current = sanitizedText.length;
+    if (onSkip) onSkip();
   };
 
   const handleNext = () => {
     if (isComplete && onComplete) {
+      if (onNext) onNext();
       onComplete();
     } else {
       skipToEnd();
     }
   };
+
+  // Expose methods to parent via ref
+  useImperativeHandle(ref, () => ({
+    skip: skipToEnd,
+    next: handleNext,
+    isTyping: () => currentIndexRef.current < sanitizedText.length && !isComplete,
+    isComplete: () => isComplete,
+  }));
 
   useEffect(() => {
     // Reset state when text changes
@@ -63,19 +83,21 @@ export default function TypewriterText({
       intervalRef.current = null;
     }
 
-    // Start typewriter effect with sanitized text
+    // Start typewriter effect - ONE character at a time
     if (sanitizedText.length > 0) {
       intervalRef.current = setInterval(() => {
         if (currentIndexRef.current < sanitizedText.length) {
-          const char = sanitizedText[currentIndexRef.current];
-          setDisplayedText((prev) => prev + char);
+          // Reveal exactly one character
           currentIndexRef.current++;
+          setDisplayedText(sanitizedText.substring(0, currentIndexRef.current));
         } else {
+          // Typing complete
           if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
           }
           setIsComplete(true);
+          if (onComplete) onComplete();
         }
       }, speed);
     } else {
@@ -91,10 +113,10 @@ export default function TypewriterText({
     };
   }, [sanitizedText, speed]);
 
-  // Global keyboard listener for controls
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      // CRITICAL: Always ignore if typing in input field or if textarea/other input
+      // Always ignore if typing in input field
       const activeEl = document.activeElement;
       if (activeEl?.tagName === 'INPUT' || 
           activeEl?.tagName === 'TEXTAREA' ||
@@ -104,38 +126,31 @@ export default function TypewriterText({
       
       const key = e.key.toLowerCase();
       
-      // [S] = Skip to end of current typing
-      if (key === 's') {
-        e.preventDefault();
+      // [S] or [Enter] = Skip to end
+      if (key === 's' || e.key === 'Enter') {
         if (currentIndexRef.current < sanitizedText.length) {
-          // Still typing, skip to end
+          e.preventDefault();
           skipToEnd();
         }
       }
-      // [N] or [Space] = Next message (only when complete)
-      else if ((key === 'n' || e.key === ' ') && isComplete && onComplete) {
+      // [N] or [Space] = Next (only when complete)
+      else if ((key === 'n' || e.key === ' ') && isComplete) {
         e.preventDefault();
-        onComplete();
+        handleNext();
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isComplete, onComplete, sanitizedText, skipToEnd]);
+  }, [isComplete, sanitizedText]);
 
   return (
     <div className={className}>
-      <div className="whitespace-pre-wrap">{displayedText}</div>
-      {!isComplete && (
-        <div className="text-terminal-dim opacity-70 text-xs mt-1">
-          [S] Skip | [Enter] Skip
-        </div>
-      )}
-      {isComplete && onComplete && (
-        <div className="text-terminal-bright opacity-80 text-xs mt-1 animate-pulse">
-          [N] Next | [Space] Next
-        </div>
-      )}
+      <div className="whitespace-pre-wrap font-mono">{displayedText}</div>
     </div>
   );
-}
+});
+
+TypewriterText.displayName = 'TypewriterText';
+
+export default TypewriterText;

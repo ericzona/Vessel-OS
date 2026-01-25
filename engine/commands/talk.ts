@@ -5,7 +5,7 @@
  */
 
 import { Command, CommandResult, CommandContext, CommandCategory } from "@/types/game.types";
-import { getRandomBriggsSaying, getBriggsGreeting } from "@/engine/npc/briggs-sayings";
+import { getRandomBriggsSaying, getBriggsGreeting, getBriggsAetherAction } from "@/engine/npc/briggs-sayings";
 import {
   createAccomplishmentState,
   incrementAccomplishment,
@@ -219,9 +219,10 @@ SHIP INCIDENT LOG - YEAR 147:
       const currentDialogue = repeatDialogues[(dialogueIndex - 1) % repeatDialogues.length];
       dialogueIndex++;
       
-      // Add a random saying from Briggs
+      // Add a random saying from Briggs with Aether-Leaf action
       const saying = getRandomBriggsSaying();
-      const sayingFooter = `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💀 BRIGGS' WISDOM:\n"${saying.text}"`;
+      const aetherAction = getBriggsAetherAction();
+      const sayingFooter = `\n\n${aetherAction}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💀 BRIGGS' WISDOM:\n"${saying.text}"`;
       
       let finalMessage = currentDialogue + sayingFooter;
       

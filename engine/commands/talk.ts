@@ -21,32 +21,29 @@ const QUARTERMASTER_DIALOGUES = {
 
 [A grizzled man in a stained jumpsuit looks up from his inventory tablet]
 
-BRIGGS: "Well, well, well... Another cryo-princess finally decides to grace us with their presence. What's it been, fifty years? A hundred? Time gets funny when you're actually LIVING it instead of napping through it."
+[He chews something green and spits into a bucket]
 
-[He spits something into a cup that you hope is coffee]
+BRIGGS: "Look at you... another Resonant vibrating out of your skin. The ship hums a tune and you just had to wake up and dance to it, didn't you?"
 
-"Name's Briggs. Quartermaster. Been awake this whole damn time keeping YOUR ship from turning into a floating coffin. While you lot were having sweet dreams about your 'New Galaxy Paradise,' I was here. Eating freeze-dried EVERYTHING. My taste buds committed suicide around year 30."
+[He wipes his mouth with the back of his hand]
 
-[He squints at your Pioneer badge]
+"Name's Briggs. Quartermaster. Been awake this whole damn time keeping this bucket from becoming a tomb. While the Statues dream their perfect dreams, I've been here eating freeze-dried hell and chewing Aether-Leaf to stay sharp."
 
-"Pre-Crash stock, eh? One of the OG nappers. Fancy. You know what we call you sleepers? 'Popsicles.' You know what popsicles don't do? HELP WITH THE DAMN SHIP REPAIRS."
+[He squints at you]
 
-[He leans in conspiratorially]
-
-"But I'll tell you something strange, Popsicle. About three cycles ago, we picked up a signal. Called it 'The Aether-Station Signal.' Coordinates don't match NOTHING in the star charts. Just... broadcasting out there. In the black. Some of the crew think it's a nav beacon. Others think it's a tomb. Me? I think it's Tuesday, because weird sh-- stuff happens on Tuesdays."
+"The void doesn't care if you're a hero or a coward, Resonant. It just wants your heat. You woke up because you couldn't stop vibrating with the ship's frequency. The Statues? They're still frozen, dreaming of paradise. You? You're a glitch. A living error in the code."
 
 [He crosses his arms]
 
-"Anyway, you want something from my hold, you better have $SCRAP. Or get good at repairs. Or both. This ain't the Lootopian welfare state anymore. Out here, you work or you float. And floating don't pay my salary."
+"There's a signal out there. Aether-Station. Been broadcasting for cycles. Makes the hull vibrate even more. Some think it's salvation. I think it's bait. But what do I know? I just chew leaves and count inventory while everyone else sleeps."
+
+[He gestures to his cargo]
+
+"You want something from my hold, you better have $SCRAP. Or get good at repairs. This ain't charity. Out here, you work or you freeze. Your choice, Resonant."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-BRIGGS' ODDBALL SAYINGS:
-• "That's about as useful as a screen door on a spaceship."
-• "You're dumber than a bag of hammers in zero-G."
-• "I've seen smarter decisions from a malfunctioning vending machine."
-
-[Type 'talk briggs' again to hear more of his charming personality]
+[Type 'talk briggs' again to hear more wisdom from the void]
   `,
 
   repeat: [

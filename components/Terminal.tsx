@@ -287,6 +287,32 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Static Interaction Bar - Mobile Friendly */}
+      {currentTypingMessage && (
+        <div className="border-t-2 border-terminal-bright bg-black p-2 flex gap-2">
+          <button
+            onClick={() => {
+              setDisplayedMessages(prev => [...prev, currentTypingMessage]);
+              setCurrentTypingMessage(null);
+            }}
+            className="flex-1 border-2 border-terminal-bright text-terminal-bright hover:bg-terminal-bright hover:text-black transition-colors py-3 px-4 font-bold text-lg animate-pulse"
+          >
+            [S] SKIP TO END
+          </button>
+          <button
+            onClick={() => {
+              if (messageQueue.length > 0) {
+                setDisplayedMessages(prev => [...prev, currentTypingMessage]);
+                setCurrentTypingMessage(null);
+              }
+            }}
+            className="flex-1 border-2 border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors py-3 px-4 font-bold text-lg"
+          >
+            [N] NEXT
+          </button>
+        </div>
+      )}
+
       {/* Input Area */}
       <div className="p-4 border-t-2 border-terminal-text">
         <div className="flex items-center gap-2">
@@ -301,12 +327,17 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
             placeholder="Type 'help' for commands..."
             autoComplete="off"
             spellCheck={false}
-            disabled={false}
+            disabled={!!currentTypingMessage}
           />
         </div>
         {gameState.pendingChoice && (
           <div className="text-terminal-dim text-xs mt-2">
             ⚠️  Choice pending - select [A] or [B] first
+          </div>
+        )}
+        {currentTypingMessage && (
+          <div className="text-terminal-dim text-xs mt-2">
+            ⏳ Message typing... Press [S] to skip or wait
           </div>
         )}
       </div>

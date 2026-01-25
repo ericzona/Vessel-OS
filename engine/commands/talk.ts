@@ -51,7 +51,7 @@ BRIGGS: "Look at you... another Resonant vibrating out of your skin. The ship hu
 
 [He adjusts his tool belt]
 
-"Let me tell you about Year 47. That's when the coffee machine broke. FORTY-SEVEN YEARS without real coffee. I had to drink this synthetic sludge that tasted like battery acid mixed with regret. You know what kept me sane? Spite. Pure, unfiltered spite for every single Popsicle dreaming of breakfast burritos while I'm here choking down nutrient paste."
+"Let me tell you about Year 47. That's when the coffee machine broke. FORTY-SEVEN YEARS without real coffee. I had to drink this synthetic sludge that tasted like battery acid mixed with regret. You know what kept me sane? Spite. Pure, unfiltered spite for every single Resonant dreaming of breakfast burritos while I'm here choking down nutrient paste."
 
 "But hey, at least you're up now. Maybe you'll actually be useful. Or maybe you'll just break something. Usually it's the latter. Please don't touch anything."`,
 
@@ -65,7 +65,7 @@ BRIGGS: "Look at you... another Resonant vibrating out of your skin. The ship hu
 
 "That Aether-Station Signal though... it's been getting stronger. Makes the hull hum sometimes. Gives me the creeps. But hey, what's one more creepy thing in the endless void, right?"`,
 
-    `BRIGGS: "Oh good, my favorite Popsicle. Come to hear more of my delightful stories about existential dread and resource scarcity?"
+    `BRIGGS: "Oh good, my favorite Resonant. Come to hear more of my delightful stories about existential dread and resource scarcity?"
 
 [He picks up a wrench, examines it like it owes him money]
 
@@ -81,7 +81,7 @@ BRIGGS: "Look at you... another Resonant vibrating out of your skin. The ship hu
 
 "Fun fact: Do you know what happens to a human body after 150 years of shipboard life? Everything hurts. EVERYTHING. I sneeze and my spine sounds like bubble wrap. Doctor says I'm 'remarkably healthy for my age.' I'm 180 years old. I'm not healthy. I'm pickled in spite and coffee substitutes."
 
-"But you know what keeps me going? Seeing you Popsicles wake up and realize we're STILL not there. We're not even close. This journey? It's multi-generational. Your grandkids' grandkids MIGHT see that new galaxy. Maybe. If we don't hit another asteroid field."
+"But you know what keeps me going? Seeing you Resonants wake up and realize we're STILL not there. We're not even close. This journey? It's multi-generational. Your grandkids' grandkids MIGHT see that new galaxy. Maybe. If we don't hit another asteroid field."
 
 "The Aether-Station Signal? Yeah, it's still out there. Broadcasting. Waiting. Some of the Old-Worlders think we should investigate. Investigate! HA! With what fuel? What time? We're barely keeping the lights on as it is."
 
@@ -94,7 +94,7 @@ BRIGGS: "Look at you... another Resonant vibrating out of your skin. The ship hu
 
 [He mutters as he returns to his inventory]
 
-"Damn Popsicles... probably gonna break something..."`,
+"Damn Resonants... probably gonna break something..."`,
 };
 
 let dialogueIndex = 0;
@@ -146,7 +146,7 @@ export const TalkCommand: Command = {
         
         let alignmentReaction = "";
         if (alignment === "Lawful") {
-          alignmentReaction = "\n\n[He eyes you approvingly]\n\n\"Hmm. You've got that 'by-the-book' look about you. Good. The last thing I need is another chaotic wildcard breaking my inventory system. You'll do fine, Popsicle.\"";
+          alignmentReaction = "\n\n[He eyes you approvingly]\n\n\"Hmm. You've got that 'by-the-book' look about you. Good. The last thing I need is another chaotic wildcard breaking my inventory system. You'll do fine, Resonant.\"";
         } else if (alignment === "Chaotic") {
           alignmentReaction = "\n\n[He narrows his eyes]\n\n\"Great. Another chaos agent. I can smell the 'break first, ask questions never' energy on you. Listen up: You touch my cargo without permission, you're getting spaced. Clear?\"";
         } else {

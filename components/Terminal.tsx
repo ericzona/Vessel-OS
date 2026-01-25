@@ -9,7 +9,7 @@ import { createBorderedTitle, createDivider } from "@/engine/ascii-border";
 import { getAlignmentDescription } from "@/types/alignment.types";
 import { applyAlignmentShift } from "@/types/alignment.types";
 import PioneerHUD from "./PioneerHUD";
-import TypewriterText from "./TypewriterText";
+import TypewriterText, { TypewriterHandle } from "./TypewriterText";
 import MoralCompass from "./MoralCompass";
 
 interface TerminalProps {
@@ -36,6 +36,7 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const typewriterRef = useRef<TypewriterHandle>(null);
   const messageIdCounter = useRef(0);
   const hasShownWelcome = useRef(false);
   
@@ -268,8 +269,9 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
         {/* Currently typing message */}
         {currentTypingMessage && (
           <TypewriterText
+            ref={typewriterRef}
             text={currentTypingMessage.text}
-            speed={30}
+            speed={25}
             onComplete={handleTypewriterComplete}
             className="whitespace-pre-wrap break-words"
           />
@@ -292,8 +294,9 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
         <div className="border-t-2 border-terminal-bright bg-black p-2 flex gap-2">
           <button
             onClick={() => {
-              setDisplayedMessages(prev => [...prev, currentTypingMessage]);
-              setCurrentTypingMessage(null);
+              if (typewriterRef.current) {
+                typewriterRef.current.skip();
+              }
             }}
             className="flex-1 border-2 border-terminal-bright text-terminal-bright hover:bg-terminal-bright hover:text-black transition-colors py-3 px-4 font-bold text-lg animate-pulse"
           >
@@ -301,9 +304,8 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
           </button>
           <button
             onClick={() => {
-              if (messageQueue.length > 0) {
-                setDisplayedMessages(prev => [...prev, currentTypingMessage]);
-                setCurrentTypingMessage(null);
+              if (typewriterRef.current) {
+                typewriterRef.current.next();
               }
             }}
             className="flex-1 border-2 border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors py-3 px-4 font-bold text-lg"

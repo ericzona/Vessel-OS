@@ -297,6 +297,8 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
               if (typewriterRef.current) {
                 typewriterRef.current.skip();
               }
+              // Return focus to input after button click
+              setTimeout(() => inputRef.current?.focus(), 100);
             }}
             className="flex-1 border-2 border-terminal-bright text-terminal-bright hover:bg-terminal-bright hover:text-black transition-colors py-3 px-4 font-bold text-lg animate-pulse"
           >
@@ -307,6 +309,8 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
               if (typewriterRef.current) {
                 typewriterRef.current.next();
               }
+              // Return focus to input after button click
+              setTimeout(() => inputRef.current?.focus(), 100);
             }}
             className="flex-1 border-2 border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors py-3 px-4 font-bold text-lg"
           >

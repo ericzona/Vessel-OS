@@ -27,11 +27,27 @@ const RANKS = [
 ];
 
 /**
+ * The Twelve Chosen - Special serial numbers that receive God-Mode stats
+ */
+const THE_TWELVE_CHOSEN = [1, 303, 606, 909, 1212, 1515, 1818, 2121, 2424, 2727, 3030, 3333];
+
+/**
+ * Check if a Pioneer number is one of The Twelve Chosen
+ */
+function isChosenOne(pioneerId: string): boolean {
+  const serialNumber = parseInt(pioneerId);
+  return !isNaN(serialNumber) && THE_TWELVE_CHOSEN.includes(serialNumber);
+}
+
+/**
  * Generate a random Pioneer manifest for a new player
  */
 export function generatePioneerManifest(pioneerId: string, generation: number = 0): PioneerManifest {
   // Random rank selection
   const rank = RANKS[Math.floor(Math.random() * RANKS.length)];
+  
+  // Check if this is one of The Twelve Chosen
+  const isChosen = isChosenOne(pioneerId);
   
   // Generate layers with basic starter gear - use actual file IDs
   const layers: Record<LayerSlot, string | null> = {
@@ -50,8 +66,8 @@ export function generatePioneerManifest(pioneerId: string, generation: number = 
     [LayerSlot.HAIR_HAT]: randomFrom(STARTER_ASSETS.hair), // Assign actual hair
   };
   
-  // Generate stats based on rank
-  const stats = generateStatsForRank(rank);
+  // Generate stats based on rank (with God-Mode for Chosen Ones)
+  const stats = generateStatsForRank(rank, pioneerId);
   
   return {
     pioneerId,
@@ -75,17 +91,44 @@ function generateStat(): number {
 }
 
 /**
- * Generate stats based on Pioneer rank
+ * Generate stats based on Pioneer rank with floor enforcement
  */
-function generateStatsForRank(rank: string) {
-  // Generate base stats (7-20 range, with 0.33% chance for 21)
-  const baseStats = {
-    perception: generateStat(),
-    salvage: generateStat(),
-    engineering: generateStat(),
-  };
+function generateStatsForRank(rank: string, pioneerId?: string) {
+  const isChosen = pioneerId && isChosenOne(pioneerId);
   
-  return baseStats;
+  // Determine minimum total stat pool
+  const minTotalStats = isChosen ? 80 : 60;
+  const maxTotalStats = isChosen ? 120 : 63; // Normal max is ~63 (3x21)
+  
+  let stats;
+  let totalStats = 0;
+  let attempts = 0;
+  const maxAttempts = 100;
+  
+  // Keep re-rolling until we meet the minimum floor
+  do {
+    stats = {
+      perception: generateStat(),
+      salvage: generateStat(),
+      engineering: generateStat(),
+    };
+    
+    totalStats = stats.perception + stats.salvage + stats.engineering;
+    attempts++;
+    
+    // If we're a Chosen One and haven't hit the range after many attempts, boost manually
+    if (isChosen && attempts > 50 && totalStats < minTotalStats) {
+      const deficit = minTotalStats - totalStats;
+      const boost = Math.ceil(deficit / 3);
+      stats.perception += boost;
+      stats.salvage += boost;
+      stats.engineering += boost;
+      totalStats = stats.perception + stats.salvage + stats.engineering;
+    }
+    
+  } while ((totalStats < minTotalStats || (isChosen && totalStats > maxTotalStats)) && attempts < maxAttempts);
+  
+  return stats;
 }
 
 /**

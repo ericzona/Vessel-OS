@@ -69,6 +69,12 @@ export function generatePioneerManifest(pioneerId: string, generation: number = 
   // Generate stats based on rank (with God-Mode for Chosen Ones)
   const stats = generateStatsForRank(rank, pioneerId);
   
+  // Debug: Log stat totals for verification
+  const totalStats = stats.perception + stats.salvage + stats.engineering;
+  if (isChosen) {
+    console.log(`🌟 CHOSEN ONE #${pioneerId} - Stats: ${stats.perception}/${stats.salvage}/${stats.engineering} = ${totalStats} (Target: 80-120)`);
+  }
+  
   return {
     pioneerId,
     generation,
@@ -105,7 +111,7 @@ function generateStatsForRank(rank: string, pioneerId?: string) {
   let attempts = 0;
   const maxAttempts = 100;
   
-  // Keep re-rolling until we meet the minimum floor
+  // Keep re-rolling until we meet the minimum floor and ceiling
   do {
     stats = {
       perception: generateStat(),
@@ -116,17 +122,35 @@ function generateStatsForRank(rank: string, pioneerId?: string) {
     totalStats = stats.perception + stats.salvage + stats.engineering;
     attempts++;
     
-    // If we're a Chosen One and haven't hit the range after many attempts, boost manually
-    if (isChosen && attempts > 50 && totalStats < minTotalStats) {
-      const deficit = minTotalStats - totalStats;
-      const boost = Math.ceil(deficit / 3);
-      stats.perception += boost;
-      stats.salvage += boost;
-      stats.engineering += boost;
+    // If we're a Chosen One and haven't hit the range after many attempts, manually adjust
+    if (isChosen && attempts > 50) {
+      if (totalStats < minTotalStats) {
+        // Boost to reach floor
+        const deficit = minTotalStats - totalStats;
+        const boost = Math.ceil(deficit / 3);
+        stats.perception += boost;
+        stats.salvage += boost;
+        stats.engineering += boost;
+      } else if (totalStats > maxTotalStats) {
+        // Scale down to ceiling
+        const ratio = maxTotalStats / totalStats;
+        stats.perception = Math.floor(stats.perception * ratio);
+        stats.salvage = Math.floor(stats.salvage * ratio);
+        stats.engineering = Math.floor(stats.engineering * ratio);
+      }
       totalStats = stats.perception + stats.salvage + stats.engineering;
     }
     
-  } while ((totalStats < minTotalStats || (isChosen && totalStats > maxTotalStats)) && attempts < maxAttempts);
+  } while ((totalStats < minTotalStats || totalStats > maxTotalStats) && attempts < maxAttempts);
+  
+  // Final safety clamp - ensure we never exceed ceiling
+  totalStats = stats.perception + stats.salvage + stats.engineering;
+  if (totalStats > maxTotalStats) {
+    const ratio = maxTotalStats / totalStats;
+    stats.perception = Math.floor(stats.perception * ratio);
+    stats.salvage = Math.floor(stats.salvage * ratio);
+    stats.engineering = Math.floor(stats.engineering * ratio);
+  }
   
   return stats;
 }

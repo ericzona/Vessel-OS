@@ -21,6 +21,45 @@ export const QuartersCommand: Command = {
     
     const pioneerNumber = gameState.character.pioneerNumber;
     const lockStatus = `Room secured by Pioneer-${String(pioneerNumber).padStart(3, '0')}`;
+    
+    // Check if first visit - grant starter gear
+    const isFirstVisit = !gameState.hasVisitedQuarters;
+    let starterGearMessage = "";
+    const updates: any = {
+      currentLocation: "quarters" as any,
+      hasVisitedQuarters: true,
+    };
+    
+    if (isFirstVisit) {
+      // Grant starter gear on first visit
+      const starterItems = [
+        { id: "10-necklace", name: "Basic Necklace", type: "MATERIAL" as any, quantity: 1, description: "A simple chain. Functional, not decorative." },
+        { id: "4-shirt", name: "Utility Shirt", type: "MATERIAL" as any, quantity: 1, description: "Standard-issue crew shirt. Stained but serviceable." },
+        { id: "5-pants", name: "Basic Pants", type: "MATERIAL" as any, quantity: 1, description: "Cargo pants with reinforced knees." }
+      ];
+      
+      updates.inventory = {
+        items: [...gameState.inventory.items, ...starterItems],
+        maxSlots: gameState.inventory.maxSlots
+      };
+      
+      starterGearMessage = `
+
+${createDivider()}
+
+🎁 STARTER GEAR MANIFESTED
+
+The ship's fabricator hums to life. Three items materialize on your workbench:
+
+  • [10-necklace] Basic Necklace
+  • [4-shirt] Utility Shirt  
+  • [5-pants] Basic Pants
+
+[Items added to inventory - type 'inventory' to view]
+
+${createDivider()}
+`;
+    }
 
     const output = `
 ${createBorderedTitle("PERSONAL QUARTERS")}
@@ -64,14 +103,13 @@ ${createDivider()}
    Pioneers become Architects."
    
    - Ship's AI, Fragment 2847-Q
+${starterGearMessage}
     `.trim();
 
     return {
       success: true,
       message: output,
-      updates: {
-        currentLocation: "quarters" as any, // Will add to types later
-      },
+      updates,
     };
   },
 };

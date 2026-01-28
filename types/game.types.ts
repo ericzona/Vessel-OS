@@ -72,6 +72,7 @@ export interface GameState {
   briggsConversations?: number; // Track talks with Briggs for "Chatty Pioneer" achievement
   alignment: import("@/types/alignment.types").AlignmentState; // 9-Point Alignment System (Identity Engine)
   pendingChoice?: BinaryChoice; // Current choice awaiting player decision
+  hasVisitedQuarters?: boolean; // Track if player has been to quarters (for starter gear)
 }
 
 export interface TimeDilatationState {

@@ -12,8 +12,16 @@ export default function Home() {
 
   useEffect(() => {
     // Initialize game state on client side
-    const pioneerManifest = generatePioneerManifest("pioneer-001", 0);
+    const pioneerId = "1"; // Testing with Chosen One #1
+    const pioneerManifest = generatePioneerManifest(pioneerId, 0);
     const characterLoot = generateCharacterLoot();
+    
+    // VERIFY CHOSEN ONE STAT FLOOR
+    const totalStats = pioneerManifest.stats.perception + pioneerManifest.stats.salvage + pioneerManifest.stats.engineering;
+    console.log(`🌟 CHOSEN ONE #${pioneerId} VERIFIED - Total Stats: ${totalStats} (Target: 80-120)`);
+    console.log(`   Perception: ${pioneerManifest.stats.perception}`);
+    console.log(`   Salvage: ${pioneerManifest.stats.salvage}`);
+    console.log(`   Engineering: ${pioneerManifest.stats.engineering}`);
     
     const initialState: GameState = {
       character: {
@@ -56,6 +64,7 @@ export default function Home() {
       isRunning: true,
       briggsConversations: 0,
       alignment: createInitialAlignmentState(),
+      hasVisitedQuarters: false,
     };
 
     setGameState(initialState);

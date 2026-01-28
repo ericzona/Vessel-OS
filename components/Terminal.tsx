@@ -236,11 +236,23 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
     }
   };
 
+  // Global click listener - always return focus to input when not typing
+  useEffect(() => {
+    const handleDocumentClick = () => {
+      if (!currentTypingMessage && inputRef.current) {
+        inputRef.current.focus();
+      }
+    };
+    
+    document.addEventListener('click', handleDocumentClick);
+    return () => document.removeEventListener('click', handleDocumentClick);
+  }, [currentTypingMessage]);
+
   return (
-    <div className="flex flex-col h-screen bg-terminal-bg text-terminal-text font-mono">
+    <div className="flex flex-col h-[100dvh] max-w-full overflow-hidden bg-terminal-bg text-terminal-text font-mono">
       {/* Header with Pioneer Profile */}
       <div className="flex items-center justify-between p-4 border-b-2 border-terminal-text">
-        <h1 className="text-2xl font-['Press_Start_2P'] text-terminal-bright">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-['Press_Start_2P'] text-terminal-bright text-center flex-1">
           THE GREAT TRANSIT
         </h1>
         
@@ -291,28 +303,35 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
 
       {/* Static Interaction Bar - Mobile Friendly */}
       {currentTypingMessage && (
-        <div className="border-t-2 border-terminal-bright bg-black p-2 flex gap-2">
+        <div className="border-t-2 border-terminal-bright bg-black p-2 flex gap-2 w-full">
           <button
-            onClick={() => {
-              if (typewriterRef.current) {
-                typewriterRef.current.skip();
+            onPointerDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              // Skip and immediately clear typing state
+              if (currentTypingMessage) {
+                setDisplayedMessages(prev => [...prev, currentTypingMessage]);
+                setCurrentTypingMessage(null);
               }
-              // Return focus to input after button click
-              setTimeout(() => inputRef.current?.focus(), 100);
+              // Force focus
+              setTimeout(() => inputRef.current?.focus(), 0);
             }}
-            className="flex-1 border-2 border-terminal-bright text-terminal-bright hover:bg-terminal-bright hover:text-black transition-colors py-3 px-4 font-bold text-lg animate-pulse"
+            className="flex-1 border-2 border-terminal-bright text-terminal-bright hover:bg-terminal-bright hover:text-terminal-bg focus:outline-none transition-colors py-3 px-4 font-bold text-base sm:text-lg animate-pulse"
           >
-            [S] SKIP TO END
+            [S] SKIP
           </button>
           <button
-            onClick={() => {
-              if (typewriterRef.current) {
-                typewriterRef.current.next();
+            onPointerDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              // Complete current and move to next
+              if (currentTypingMessage) {
+                setDisplayedMessages(prev => [...prev, currentTypingMessage]);
+                setCurrentTypingMessage(null);
               }
-              // Return focus to input after button click
-              setTimeout(() => inputRef.current?.focus(), 100);
+              setTimeout(() => inputRef.current?.focus(), 0);
             }}
-            className="flex-1 border-2 border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors py-3 px-4 font-bold text-lg"
+            className="flex-1 border-2 border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-terminal-bg focus:outline-none transition-colors py-3 px-4 font-bold text-base sm:text-lg"
           >
             [N] NEXT
           </button>
@@ -333,17 +352,12 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
             placeholder="Type 'help' for commands..."
             autoComplete="off"
             spellCheck={false}
-            disabled={!!currentTypingMessage}
+            disabled={false}
           />
         </div>
-        {gameState.pendingChoice && (
+        {gameState.pendingChoice && !currentTypingMessage && (
           <div className="text-terminal-dim text-xs mt-2">
             ⚠️  Choice pending - select [A] or [B] first
-          </div>
-        )}
-        {currentTypingMessage && (
-          <div className="text-terminal-dim text-xs mt-2">
-            ⏳ Message typing... Press [S] to skip or wait
           </div>
         )}
       </div>

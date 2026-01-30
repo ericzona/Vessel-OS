@@ -32,6 +32,8 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showInventoryModal, setShowInventoryModal] = useState(false);
+  const [showAlignmentModal, setShowAlignmentModal] = useState(false);
   const [showBinaryChoice, setShowBinaryChoice] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -372,24 +374,20 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
       <div className="border-t-2 border-terminal-dim bg-black p-2 px-4">
         <div className="flex flex-col sm:flex-row gap-2 w-full">
           <button
-            onClick={() => {
-              handleCommand('inventory');
-            }}
-            className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors py-2 px-3 text-sm font-bold"
+            onClick={() => setShowInventoryModal(true)}
+            className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors h-11 px-3 text-sm font-bold"
           >
             [I] INVENTORY
           </button>
           <button
             onClick={() => setShowProfileModal(true)}
-            className="flex-1 border border-terminal-bright text-terminal-bright hover:bg-terminal-bright hover:text-black transition-colors py-2 px-3 text-sm font-bold"
+            className="flex-1 border border-terminal-bright text-terminal-bright hover:bg-terminal-bright hover:text-black transition-colors h-11 px-3 text-sm font-bold"
           >
             [P] PROFILE
           </button>
           <button
-            onClick={() => {
-              handleCommand('status a');
-            }}
-            className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors py-2 px-3 text-sm font-bold"
+            onClick={() => setShowAlignmentModal(true)}
+            className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors h-11 px-3 text-sm font-bold"
           >
             [A] ALIGNMENT
           </button>
@@ -419,6 +417,171 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
           </div>
         )}
       </div>
+
+      {/* Inventory Modal */}
+      {showInventoryModal && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+          onClick={() => setShowInventoryModal(false)}
+        >
+          <div 
+            className="bg-terminal-bg border-4 border-terminal-text p-8 max-w-3xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-6">
+              <h2 className="text-xl font-['Press_Start_2P'] text-terminal-bright">
+                INVENTORY
+              </h2>
+              <button 
+                onClick={() => setShowInventoryModal(false)}
+                className="text-terminal-dim hover:text-terminal-text text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="text-sm text-terminal-dim">
+                Capacity: {gameState.inventory.items.length} / {gameState.inventory.maxSlots}
+              </div>
+
+              {/* Inventory Grid - 4x5 (20 slots) */}
+              <div className="grid grid-cols-4 gap-3">
+                {Array.from({ length: gameState.inventory.maxSlots }).map((_, index) => {
+                  const item = gameState.inventory.items[index];
+                  return (
+                    <div
+                      key={index}
+                      className={`
+                        border-2 h-20 flex items-center justify-center
+                        ${item 
+                          ? 'border-terminal-text bg-terminal-dim bg-opacity-10' 
+                          : 'border-terminal-dim border-dashed'
+                        }
+                      `}
+                    >
+                      {item ? (
+                        <div className="text-center p-2">
+                          <div className="text-xs text-terminal-bright font-bold truncate">
+                            {item.name}
+                          </div>
+                          {item.quantity > 1 && (
+                            <div className="text-[10px] text-terminal-dim">
+                              x{item.quantity}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-terminal-dim text-xs">—</div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="text-xs text-terminal-dim text-center mt-4">
+                Press [I] or click anywhere to close
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Alignment Modal */}
+      {showAlignmentModal && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+          onClick={() => setShowAlignmentModal(false)}
+        >
+          <div 
+            className="bg-terminal-bg border-4 border-terminal-bright p-8 max-w-3xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-6">
+              <h2 className="text-xl font-['Press_Start_2P'] text-terminal-bright">
+                ALIGNMENT & QUEST LOG
+              </h2>
+              <button 
+                onClick={() => setShowAlignmentModal(false)}
+                className="text-terminal-dim hover:text-terminal-text text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* Current Alignment */}
+              <div className="border-2 border-terminal-bright p-4">
+                <h3 className="text-terminal-bright mb-2 font-bold">⚖️ CURRENT ALIGNMENT</h3>
+                <div className="text-2xl text-center text-terminal-bright mb-2">
+                  {gameState.alignment.currentAlignment}
+                </div>
+                <div className="text-xs text-terminal-dim text-center italic">
+                  {getAlignmentDescription(gameState.alignment.currentAlignment)}
+                </div>
+              </div>
+
+              {/* Moral Compass Visual */}
+              <div className="border-2 border-terminal-text p-4">
+                <h3 className="text-terminal-bright mb-3 font-bold">9-POINT SPECTRUM</h3>
+                <div className="flex justify-center">
+                  <MoralCompass scores={gameState.alignment.scores} />
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-terminal-dim">Law/Chaos:</span>
+                    <span className="text-terminal-bright ml-2">{gameState.alignment.scores.lawChaos}</span>
+                  </div>
+                  <div>
+                    <span className="text-terminal-dim">Good/Evil:</span>
+                    <span className="text-terminal-bright ml-2">{gameState.alignment.scores.goodEvil}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quest Log */}
+              <div className="border-2 border-terminal-text p-4">
+                <h3 className="text-terminal-bright mb-3 font-bold">📜 QUEST LOG</h3>
+                {gameState.alignment.questLog.length > 0 ? (
+                  <div className="space-y-2">
+                    {gameState.alignment.questLog.map((quest, i) => (
+                      <div key={i} className="text-sm">
+                        <span className="text-terminal-bright">• {quest.name}</span>
+                        <span className="text-terminal-dim ml-2">[{quest.status.toUpperCase()}]</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-sm text-terminal-dim italic">No active quests</div>
+                )}
+              </div>
+
+              {/* Recent Choices */}
+              <div className="border-2 border-terminal-text p-4">
+                <h3 className="text-terminal-bright mb-3 font-bold">🔄 RECENT CHOICES</h3>
+                {gameState.alignment.alignmentHistory.length > 0 ? (
+                  <div className="space-y-1 text-xs">
+                    {gameState.alignment.alignmentHistory.slice(-5).reverse().map((shift, i) => (
+                      <div key={i} className="text-terminal-dim">
+                        {i + 1}. {shift.choice}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-sm text-terminal-dim italic">No choices made yet</div>
+                )}
+                <div className="mt-3 text-xs text-terminal-dim">
+                  Total Choices: {gameState.alignment.alignmentHistory.length}
+                </div>
+              </div>
+
+              <div className="text-xs text-terminal-dim text-center mt-4">
+                Press [A] or click anywhere to close
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Pioneer Profile Modal */}
       {showProfileModal && (

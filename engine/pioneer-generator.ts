@@ -27,16 +27,62 @@ const RANKS = [
 ];
 
 /**
- * The Twelve Chosen - Special serial numbers that receive God-Mode stats
+ * The Bench of 12 - Special Lootopians with stat bonuses
  */
-const THE_TWELVE_CHOSEN = [1, 303, 606, 909, 1212, 1515, 1818, 2121, 2424, 2727, 3030, 3333];
+const BENCH_OF_12 = [1, 303, 606, 909, 1212, 1515, 1818, 2121, 2424, 2727, 3030, 3333];
 
 /**
- * Check if a Pioneer number is one of The Twelve Chosen
+ * Check if a Lootopian is on the Bench of 12
  */
-function isChosenOne(pioneerId: string): boolean {
-  const serialNumber = parseInt(pioneerId);
-  return !isNaN(serialNumber) && THE_TWELVE_CHOSEN.includes(serialNumber);
+function isOnBench(pioneerId: string): boolean {
+  const num = parseInt(pioneerId);
+  return !isNaN(num) && BENCH_OF_12.includes(num);
+}
+
+/**
+ * Generate a single stat
+ * @param isBench - Whether this is a Bench of 12 member
+ * @returns Stat value (10-20 for regular, 10-21 for Bench)
+ */
+function generateStat(isBench: boolean): number {
+  // Base roll: 10-20 (inclusive)
+  const base = Math.floor(Math.random() * 11) + 10;
+  
+  if (isBench) {
+    // Bench members get +1 to +5 bonus
+    const bonus = Math.floor(Math.random() * 5) + 1;
+    // Cap at 21
+    return Math.min(base + bonus, 21);
+  }
+  
+  return base;
+}
+
+/**
+ * Generate 6 core stats
+ */
+function generateCoreStats(pioneerId: string) {
+  const isBench = isOnBench(pioneerId);
+  
+  const stats = {
+    str: generateStat(isBench),
+    vit: generateStat(isBench),
+    agi: generateStat(isBench),
+    int: generateStat(isBench),
+    lck: generateStat(isBench),
+    dex: generateStat(isBench),
+  };
+  
+  const total = stats.str + stats.vit + stats.agi + stats.int + stats.lck + stats.dex;
+  
+  if (isBench) {
+    console.log(`🌟 BENCH OF 12 #${pioneerId} VERIFIED`);
+    console.log(`   STR: ${stats.str} | VIT: ${stats.vit} | AGI: ${stats.agi}`);
+    console.log(`   INT: ${stats.int} | LCK: ${stats.lck} | DEX: ${stats.dex}`);
+    console.log(`   TOTAL: ${total} (Range: 66-126 for Bench)`);
+  }
+  
+  return stats;
 }
 
 /**
@@ -45,9 +91,6 @@ function isChosenOne(pioneerId: string): boolean {
 export function generatePioneerManifest(pioneerId: string, generation: number = 0): PioneerManifest {
   // Random rank selection
   const rank = RANKS[Math.floor(Math.random() * RANKS.length)];
-  
-  // Check if this is one of The Twelve Chosen
-  const isChosen = isChosenOne(pioneerId);
   
   // Generate layers with basic starter gear - use actual file IDs
   const layers: Record<LayerSlot, string | null> = {
@@ -66,14 +109,8 @@ export function generatePioneerManifest(pioneerId: string, generation: number = 
     [LayerSlot.HAIR_HAT]: randomFrom(STARTER_ASSETS.hair), // Assign actual hair
   };
   
-  // Generate stats based on rank (with God-Mode for Chosen Ones)
-  const stats = generateStatsForRank(rank, pioneerId);
-  
-  // Debug: Log stat totals for verification
-  const totalStats = stats.perception + stats.salvage + stats.engineering;
-  if (isChosen) {
-    console.log(`🌟 CHOSEN ONE #${pioneerId} - Stats: ${stats.perception}/${stats.salvage}/${stats.engineering} = ${totalStats} (Target: 80-120)`);
-  }
+  // Generate 6 core stats
+  const stats = generateCoreStats(pioneerId);
   
   return {
     pioneerId,
@@ -82,77 +119,6 @@ export function generatePioneerManifest(pioneerId: string, generation: number = 
     layers,
     stats,
   };
-}
-
-/**
- * Generate a single stat with 7-20 range and 0.33% chance for critical 21
- */
-function generateStat(): number {
-  // 0.33% chance for critical roll of 21
-  if (Math.random() < 0.0033) {
-    return 21;
-  }
-  // Normal roll: 7-20
-  return Math.floor(Math.random() * 14) + 7;
-}
-
-/**
- * Generate stats based on Pioneer rank with floor enforcement
- */
-function generateStatsForRank(rank: string, pioneerId?: string) {
-  const isChosen = pioneerId && isChosenOne(pioneerId);
-  
-  // Determine minimum total stat pool
-  const minTotalStats = isChosen ? 80 : 60;
-  const maxTotalStats = isChosen ? 120 : 63; // Normal max is ~63 (3x21)
-  
-  let stats;
-  let totalStats = 0;
-  let attempts = 0;
-  const maxAttempts = 100;
-  
-  // Keep re-rolling until we meet the minimum floor and ceiling
-  do {
-    stats = {
-      perception: generateStat(),
-      salvage: generateStat(),
-      engineering: generateStat(),
-    };
-    
-    totalStats = stats.perception + stats.salvage + stats.engineering;
-    attempts++;
-    
-    // If we're a Chosen One and haven't hit the range after many attempts, manually adjust
-    if (isChosen && attempts > 50) {
-      if (totalStats < minTotalStats) {
-        // Boost to reach floor
-        const deficit = minTotalStats - totalStats;
-        const boost = Math.ceil(deficit / 3);
-        stats.perception += boost;
-        stats.salvage += boost;
-        stats.engineering += boost;
-      } else if (totalStats > maxTotalStats) {
-        // Scale down to ceiling
-        const ratio = maxTotalStats / totalStats;
-        stats.perception = Math.floor(stats.perception * ratio);
-        stats.salvage = Math.floor(stats.salvage * ratio);
-        stats.engineering = Math.floor(stats.engineering * ratio);
-      }
-      totalStats = stats.perception + stats.salvage + stats.engineering;
-    }
-    
-  } while ((totalStats < minTotalStats || totalStats > maxTotalStats) && attempts < maxAttempts);
-  
-  // Final safety clamp - ensure we never exceed ceiling
-  totalStats = stats.perception + stats.salvage + stats.engineering;
-  if (totalStats > maxTotalStats) {
-    const ratio = maxTotalStats / totalStats;
-    stats.perception = Math.floor(stats.perception * ratio);
-    stats.salvage = Math.floor(stats.salvage * ratio);
-    stats.engineering = Math.floor(stats.engineering * ratio);
-  }
-  
-  return stats;
 }
 
 /**
@@ -183,6 +149,9 @@ export function getPioneerSummary(manifest: PioneerManifest): string {
   const activeLayers = Object.entries(manifest.layers)
     .filter(([_, asset]) => asset !== null)
     .length;
+  
+  const total = manifest.stats.str + manifest.stats.vit + manifest.stats.agi +
+                manifest.stats.int + manifest.stats.lck + manifest.stats.dex;
     
   return `
 ╔════════════════════════════════════════════════════════════╗
@@ -199,10 +168,15 @@ EQUIPPED LAYERS: ${activeLayers}/13
 • Pants: ${describeLayer(LayerSlot.PANTS, manifest.layers[LayerSlot.PANTS])}
 • Shoes: ${describeLayer(LayerSlot.SHOES, manifest.layers[LayerSlot.SHOES])}
 
-STATS:
-• Perception: ${manifest.stats.perception} (Time Dilatation efficiency)
-• Salvage: ${manifest.stats.salvage} (Mining yield bonus)
-• Engineering: ${manifest.stats.engineering} (Repair efficiency bonus)
+LOOTOPIAN CORE STATS (10-20, Bench: 10-21):
+• STR (Strength):     ${manifest.stats.str}
+• VIT (Vitality):     ${manifest.stats.vit}
+• AGI (Agility):      ${manifest.stats.agi}
+• INT (Intelligence): ${manifest.stats.int}
+• LCK (Luck):         ${manifest.stats.lck}
+• DEX (Dexterity):    ${manifest.stats.dex}
+
+TOTAL: ${total}
 
 [Pre-Crash DNA: AWAKENED]
   `.trim();

@@ -82,9 +82,22 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
   // Global keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      // Don't intercept if typing in input field
+      const isTypingInInput = document.activeElement?.tagName === 'INPUT';
+      
+      // [S] or [s] - Skip typewriter (works globally except when typing in input)
+      if ((e.key === 's' || e.key === 'S') && !isTypingInInput && currentTypingMessage) {
+        e.preventDefault();
+        e.stopImmediatePropagation(); // CRITICAL: Prevent 's' from reaching command parser
+        setDisplayedMessages(prev => [...prev, currentTypingMessage]);
+        setCurrentTypingMessage(null);
+        setTimeout(() => inputRef.current?.focus(), 0);
+        return;
+      }
+      
       // [P] - Toggle profile modal
       if (e.key === 'p' || e.key === 'P') {
-        if (document.activeElement?.tagName !== 'INPUT') {
+        if (!isTypingInInput) {
           e.preventDefault();
           setShowProfileModal(prev => !prev);
         }
@@ -104,7 +117,7 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState.pendingChoice, showProfileModal]);
+  }, [gameState.pendingChoice, showProfileModal, currentTypingMessage]);
 
   const addMessage = (text: string, isNarrative: boolean = false) => {
     const newMessage: QueuedMessage = {
@@ -166,7 +179,16 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
       // Narrative messages use typewriter, system messages are instant
       const isNarrative = result.message.includes("You stand in") || 
                          result.message.includes("NAVIGATION IN PROGRESS") ||
-                         result.message.includes("Welcome, Pioneer");
+                         result.message.includes("Welcome, Pioneer") ||
+                         result.message.includes("Quartermaster Briggs") ||
+                         result.message.includes("says,") ||
+                         result.message.includes("The walls") ||
+                         result.message.includes("step through") ||
+                         trimmedCmd.startsWith("look") ||
+                         trimmedCmd.startsWith("l ") ||
+                         trimmedCmd.startsWith("talk") ||
+                         trimmedCmd.startsWith("quarters") ||
+                         trimmedCmd.startsWith("q");
       addMessage(result.message, isNarrative);
     }
 
@@ -210,6 +232,14 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    // CRITICAL: Block 's' key if typing animation is active
+    if ((e.key === 's' || e.key === 'S') && currentTypingMessage) {
+      e.preventDefault();
+      e.stopPropagation();
+      // Skip will be handled by global listener
+      return;
+    }
+    
     if (e.key === "Enter") {
       handleCommand(input);
     } else if (e.key === "ArrowUp") {
@@ -249,10 +279,10 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
   }, [currentTypingMessage]);
 
   return (
-    <div className="flex flex-col h-[100dvh] max-w-full overflow-hidden bg-terminal-bg text-terminal-text font-mono">
+    <div className="flex flex-col h-[100dvh] w-full max-w-full overflow-x-hidden overflow-y-hidden bg-terminal-bg text-terminal-text font-mono">
       {/* Header with Pioneer Profile */}
-      <div className="flex items-center justify-between p-4 border-b-2 border-terminal-text">
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-['Press_Start_2P'] text-terminal-bright text-center flex-1">
+      <div className="flex items-center justify-between p-4 border-b-2 border-terminal-text w-full max-w-full overflow-hidden">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-['Press_Start_2P'] text-terminal-bright text-center flex-1 w-full px-2 break-words">
           THE GREAT TRANSIT
         </h1>
         
@@ -303,7 +333,7 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
 
       {/* Static Interaction Bar - Mobile Friendly */}
       {currentTypingMessage && (
-        <div className="border-t-2 border-terminal-bright bg-black p-2 flex gap-2 w-full">
+        <div className="border-t-2 border-terminal-bright bg-black p-2 px-4 flex gap-2 w-full">
           <button
             onPointerDown={(e) => {
               e.preventDefault();
@@ -337,6 +367,34 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
           </button>
         </div>
       )}
+
+      {/* Action Bar - Persistent UI Strip */}
+      <div className="border-t-2 border-terminal-dim bg-black p-2 px-4">
+        <div className="flex flex-col sm:flex-row gap-2 w-full">
+          <button
+            onClick={() => {
+              handleCommand('inventory');
+            }}
+            className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors py-2 px-3 text-sm font-bold"
+          >
+            [I] INVENTORY
+          </button>
+          <button
+            onClick={() => setShowProfileModal(true)}
+            className="flex-1 border border-terminal-bright text-terminal-bright hover:bg-terminal-bright hover:text-black transition-colors py-2 px-3 text-sm font-bold"
+          >
+            [P] PROFILE
+          </button>
+          <button
+            onClick={() => {
+              handleCommand('status a');
+            }}
+            className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors py-2 px-3 text-sm font-bold"
+          >
+            [A] ALIGNMENT
+          </button>
+        </div>
+      </div>
 
       {/* Input Area */}
       <div className="p-4 border-t-2 border-terminal-text">
@@ -384,9 +442,9 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
               </button>
             </div>
 
-            <div className="flex gap-8">
+            <div className="flex flex-col sm:flex-row gap-8">
               {/* 10x Enlarged Pioneer */}
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 mx-auto sm:mx-0">
                 <PioneerHUD manifest={gameState.character.pioneerManifest} size={400} />
               </div>
 
@@ -398,34 +456,37 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
                   <div className="grid grid-cols-2 gap-3 font-mono text-sm">
                     <StatDisplay 
                       label="STR" 
-                      value={gameState.character.pioneerManifest.stats.perception} 
-                      tooltip="Strength - Affects mining and combat effectiveness"
+                      value={gameState.character.pioneerManifest.stats.str} 
+                      tooltip="Strength - Affects combat and mining"
                     />
                     <StatDisplay 
                       label="VIT" 
-                      value={gameState.character.pioneerManifest.stats.salvage} 
-                      tooltip="Vitality - Increases survival and health"
+                      value={gameState.character.pioneerManifest.stats.vit} 
+                      tooltip="Vitality - Affects health and survival"
                     />
                     <StatDisplay 
                       label="AGI" 
-                      value={gameState.character.pioneerManifest.stats.engineering} 
-                      tooltip="Agility - Improves movement and evasion"
+                      value={gameState.character.pioneerManifest.stats.agi} 
+                      tooltip="Agility - Affects movement and evasion"
                     />
                     <StatDisplay 
                       label="INT" 
-                      value={gameState.character.pioneerManifest.stats.perception + 2} 
-                      tooltip="Intelligence - Enhances research and problem-solving"
+                      value={gameState.character.pioneerManifest.stats.int} 
+                      tooltip="Intelligence - Affects research and problem-solving"
                     />
                     <StatDisplay 
                       label="LCK" 
-                      value={gameState.character.pioneerManifest.stats.salvage - 1} 
-                      tooltip="Luck - Affects critical hits (21 rolls) and rare finds"
+                      value={gameState.character.pioneerManifest.stats.lck} 
+                      tooltip="Luck - Affects critical hits and rare finds"
                     />
                     <StatDisplay 
                       label="DEX" 
-                      value={gameState.character.pioneerManifest.stats.engineering + 1} 
-                      tooltip="Dexterity - Improves precision and crafting"
+                      value={gameState.character.pioneerManifest.stats.dex} 
+                      tooltip="Dexterity - Affects precision and crafting"
                     />
+                  </div>
+                  <div className="mt-2 text-xs text-terminal-dim text-center">
+                    Total: {gameState.character.pioneerManifest.stats.str + gameState.character.pioneerManifest.stats.vit + gameState.character.pioneerManifest.stats.agi + gameState.character.pioneerManifest.stats.int + gameState.character.pioneerManifest.stats.lck + gameState.character.pioneerManifest.stats.dex}
                   </div>
                 </div>
 

@@ -16,12 +16,7 @@ export default function Home() {
     const pioneerManifest = generatePioneerManifest(pioneerId, 0);
     const characterLoot = generateCharacterLoot();
     
-    // VERIFY CHOSEN ONE STAT FLOOR
-    const totalStats = pioneerManifest.stats.perception + pioneerManifest.stats.salvage + pioneerManifest.stats.engineering;
-    console.log(`🌟 CHOSEN ONE #${pioneerId} VERIFIED - Total Stats: ${totalStats} (Target: 80-120)`);
-    console.log(`   Perception: ${pioneerManifest.stats.perception}`);
-    console.log(`   Salvage: ${pioneerManifest.stats.salvage}`);
-    console.log(`   Engineering: ${pioneerManifest.stats.engineering}`);
+    // Generator logs stats automatically for Bench of 12
     
     const initialState: GameState = {
       character: {

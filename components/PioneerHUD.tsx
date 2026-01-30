@@ -130,29 +130,29 @@ export default function PioneerHUD({ manifest, size = 100 }: PioneerHUDProps) {
         <div className="grid grid-cols-3 gap-0.5 text-center">
           <div>
             <div className="text-terminal-dim">STR</div>
-            <div className="font-bold text-[10px]">{manifest.stats.perception}</div>
+            <div className="font-bold text-[10px]">{manifest.stats.str}</div>
           </div>
           <div>
             <div className="text-terminal-dim">VIT</div>
-            <div className="font-bold text-[10px]">{manifest.stats.salvage}</div>
+            <div className="font-bold text-[10px]">{manifest.stats.vit}</div>
           </div>
           <div>
             <div className="text-terminal-dim">AGI</div>
-            <div className="font-bold text-[10px]">{manifest.stats.engineering}</div>
+            <div className="font-bold text-[10px]">{manifest.stats.agi}</div>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-0.5 text-center mt-0.5">
           <div>
             <div className="text-terminal-dim">INT</div>
-            <div className="font-bold text-[10px]">{manifest.stats.perception + 2}</div>
+            <div className="font-bold text-[10px]">{manifest.stats.int}</div>
           </div>
           <div>
             <div className="text-terminal-dim">LCK</div>
-            <div className="font-bold text-[10px]">{manifest.stats.salvage - 1}</div>
+            <div className="font-bold text-[10px]">{manifest.stats.lck}</div>
           </div>
           <div>
             <div className="text-terminal-dim">DEX</div>
-            <div className="font-bold text-[10px]">{manifest.stats.engineering + 1}</div>
+            <div className="font-bold text-[10px]">{manifest.stats.dex}</div>
           </div>
         </div>
       </div>

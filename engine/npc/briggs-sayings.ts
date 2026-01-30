@@ -80,6 +80,7 @@ export function getBriggsGreeting(gameState?: any): string {
     "You need something, or are you just bored of listening to the ship hum?",
     "What now? And don't tell me another Statue woke up. My sanity can't take it.",
     "Ship's holding together. That's more than I can say for my patience.",
+    "Stop walking around naked. Go find some rags in The Dressing Room before I have to look at you.",
   ];
   
   return greetings[Math.floor(Math.random() * greetings.length)];

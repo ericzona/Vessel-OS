@@ -20,8 +20,11 @@ export interface PioneerManifest {
   rank: string;       // Drifter, Technician, etc.
   layers: Record<LayerSlot, string | null>; // Maps Slot to IPFS Hash
   stats: {
-    perception: number; // Affects Time Dilatation
-    salvage: number;    // Affects Mine yield
-    engineering: number;// Affects Repair efficiency
+    str: number;  // Strength (10-21) - Affects combat and mining
+    vit: number;  // Vitality (10-21) - Affects health and survival
+    agi: number;  // Agility (10-21) - Affects movement and evasion
+    int: number;  // Intelligence (10-21) - Affects research and problem-solving
+    lck: number;  // Luck (10-21) - Affects critical hits and rare finds
+    dex: number;  // Dexterity (10-21) - Affects precision and crafting
   };
 }

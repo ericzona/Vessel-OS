@@ -10,13 +10,19 @@ import { createBorderedTitle, createDivider } from "@/engine/ascii-border";
 
 export const StatusCommand: Command = {
   name: "status",
-  aliases: ["stat", "systems"],
+  aliases: ["stat", "systems", "s", "a"],
   description: "Display status menu with options",
   usage: "status [option]",
   category: CommandCategory.SHIP,
 
   execute(args: string[], context: CommandContext): CommandResult {
     const { shipHeartbeat, timeDilatation, gameState } = context;
+    
+    // Special handling: if command was 'a', show alignment directly
+    if (args.length === 0 && context.gameState.currentLocation) {
+      // Check if this was called as 'a' shortcut by looking at command history
+      // For now, show menu if called as 'status', alignment if called as 'a'
+    }
     
     // If no args, show menu
     if (args.length === 0) {
@@ -120,13 +126,15 @@ ${formatCharacterLoot(gameState.character.characterLoot)}
 
 ───────────────────────────────────────────────────────────
 
-📊 CORE STATS (Range: 7-20):
-  STR (Strength):     ${gameState.character.pioneerManifest.stats.perception}
-  VIT (Vitality):     ${gameState.character.pioneerManifest.stats.salvage}
-  AGI (Agility):      ${gameState.character.pioneerManifest.stats.engineering}
-  INT (Intelligence): ${gameState.character.pioneerManifest.stats.perception + 2}
-  LCK (Luck):         ${gameState.character.pioneerManifest.stats.salvage - 1}
-  DEX (Dexterity):    ${gameState.character.pioneerManifest.stats.engineering + 1}
+📊 LOOTOPIAN CORE STATS (10-20, Bench of 12: 10-21):
+  STR (Strength):     ${gameState.character.pioneerManifest.stats.str}
+  VIT (Vitality):     ${gameState.character.pioneerManifest.stats.vit}
+  AGI (Agility):      ${gameState.character.pioneerManifest.stats.agi}
+  INT (Intelligence): ${gameState.character.pioneerManifest.stats.int}
+  LCK (Luck):         ${gameState.character.pioneerManifest.stats.lck}
+  DEX (Dexterity):    ${gameState.character.pioneerManifest.stats.dex}
+  
+  TOTAL: ${gameState.character.pioneerManifest.stats.str + gameState.character.pioneerManifest.stats.vit + gameState.character.pioneerManifest.stats.agi + gameState.character.pioneerManifest.stats.int + gameState.character.pioneerManifest.stats.lck + gameState.character.pioneerManifest.stats.dex}
 
 ───────────────────────────────────────────────────────────
 

@@ -1,19 +1,19 @@
 /**
- * QUARTERS Command
- * Phase 4.6: Personal Quarters - Home Building
+ * THE DRESSING ROOM Command
+ * Phase 5.6: The Dressing Room - Home Building
  * 
- * A space-time anomaly makes the quarters feel cavernous.
- * This is the player's blank canvas in the void.
+ * A space-time anomaly makes the room feel cavernous.
+ * This is where Pioneers find gear and build their wardrobe.
  */
 
 import { Command, CommandResult, CommandContext, CommandCategory } from "@/types/game.types";
 import { createBorderedTitle, createDivider } from "@/engine/ascii-border";
 
 export const QuartersCommand: Command = {
-  name: "quarters",
-  aliases: ["q", "room", "home"],
-  description: "Enter your personal quarters",
-  usage: "quarters",
+  name: "dressing",
+  aliases: ["q", "quarters", "room", "wardrobe"],
+  description: "Enter The Dressing Room",
+  usage: "dressing",
   category: CommandCategory.NAVIGATION,
 
   execute(args: string[], context: CommandContext): CommandResult {
@@ -62,7 +62,7 @@ ${createDivider()}
     }
 
     const output = `
-${createBorderedTitle("PERSONAL QUARTERS")}
+${createBorderedTitle("THE DRESSING ROOM")}
 
 You step through the threshold and feel the shift—
 
@@ -80,7 +80,7 @@ This is the first step toward building something that lasts.
 
 ${createDivider()}
 
-🔒 QUARTERS LOCK STATUS
+🔒 DRESSING ROOM ACCESS
    ${lockStatus}
    
    Only you can modify this space.

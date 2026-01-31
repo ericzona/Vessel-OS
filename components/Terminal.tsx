@@ -81,45 +81,65 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
     }
   }, [messageQueue, currentTypingMessage]);
 
-  // Global keyboard shortcuts
+  // Global keyboard shortcuts - CRITICAL: Window-level capture
   useEffect(() => {
     const handleKeyDown = (e: globalThis.KeyboardEvent) => {
-      // Don't intercept if typing in input field
+      // Check if we're typing in input field
       const isTypingInInput = document.activeElement?.tagName === 'INPUT';
       
-      // [S] or [s] - Skip typewriter (works globally except when typing in input)
-      if ((e.key === 's' || e.key === 'S') && !isTypingInInput && currentTypingMessage) {
+      // [S] - Skip typewriter (HIGHEST PRIORITY)
+      if ((e.key === 's' || e.key === 'S') && currentTypingMessage && !isTypingInInput) {
         e.preventDefault();
-        e.stopImmediatePropagation(); // CRITICAL: Prevent 's' from reaching command parser
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        console.log('🔴 S KEY CAPTURED - Skipping typewriter');
         setDisplayedMessages(prev => [...prev, currentTypingMessage]);
         setCurrentTypingMessage(null);
         setTimeout(() => inputRef.current?.focus(), 0);
         return;
       }
       
-      // [P] - Toggle profile modal
-      if (e.key === 'p' || e.key === 'P') {
-        if (!isTypingInInput) {
-          e.preventDefault();
-          setShowProfileModal(prev => !prev);
-        }
+      // [I] - Toggle inventory modal (no terminal text)
+      if ((e.key === 'i' || e.key === 'I') && !isTypingInInput && !gameState.pendingChoice) {
+        e.preventDefault();
+        console.log('🔴 I KEY CAPTURED - Opening Inventory Modal');
+        setShowInventoryModal(prev => !prev);
+        return;
       }
       
-      // [A] or [B] - Binary choice selection
-      if (gameState.pendingChoice && !showProfileModal) {
-        if (e.key === 'a' || e.key === 'A') {
-          e.preventDefault();
+      // [P] - Toggle profile modal (no terminal text)
+      if ((e.key === 'p' || e.key === 'P') && !isTypingInInput) {
+        e.preventDefault();
+        console.log('🔴 P KEY CAPTURED - Opening Profile Modal');
+        setShowProfileModal(prev => !prev);
+        return;
+      }
+      
+      // [A] - Toggle alignment modal OR select choice A
+      if ((e.key === 'a' || e.key === 'A') && !isTypingInInput) {
+        e.preventDefault();
+        if (gameState.pendingChoice) {
+          console.log('🔴 A KEY CAPTURED - Selecting Choice A');
           handleBinaryChoice('A');
-        } else if (e.key === 'b' || e.key === 'B') {
-          e.preventDefault();
-          handleBinaryChoice('B');
+        } else {
+          console.log('🔴 A KEY CAPTURED - Opening Alignment Modal');
+          setShowAlignmentModal(prev => !prev);
         }
+        return;
+      }
+      
+      // [B] - Binary choice selection
+      if ((e.key === 'b' || e.key === 'B') && !isTypingInInput && gameState.pendingChoice) {
+        e.preventDefault();
+        console.log('🔴 B KEY CAPTURED - Selecting Choice B');
+        handleBinaryChoice('B');
+        return;
       }
     };
     
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState.pendingChoice, showProfileModal, currentTypingMessage]);
+    window.addEventListener('keydown', handleKeyDown, true); // Use capture phase
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
+  }, [gameState.pendingChoice, currentTypingMessage, showProfileModal, showInventoryModal, showAlignmentModal]);
 
   const addMessage = (text: string, isNarrative: boolean = false) => {
     const newMessage: QueuedMessage = {
@@ -234,14 +254,40 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    // CRITICAL: Block 's' key if typing animation is active
-    if ((e.key === 's' || e.key === 'S') && currentTypingMessage) {
+    // 1. HIGHEST PRIORITY: Skip typewriter with 's' key
+    if (currentTypingMessage && (e.key === 's' || e.key === 'S')) {
       e.preventDefault();
       e.stopPropagation();
-      // Skip will be handled by global listener
+      console.log('🔴 INPUT-LEVEL S KEY - Skipping typewriter');
+      setDisplayedMessages(prev => [...prev, currentTypingMessage]);
+      setCurrentTypingMessage(null);
+      setTimeout(() => inputRef.current?.focus(), 0);
       return;
     }
+
+    // 2. MODAL HOTKEYS: Only if input is empty (to allow typing commands)
+    if (input === "") {
+      if (e.key === 'i' || e.key === 'I') {
+        e.preventDefault();
+        console.log('🔴 INPUT-LEVEL I KEY - Opening Inventory Modal');
+        setShowInventoryModal(true);
+        return;
+      }
+      if (e.key === 'a' || e.key === 'A') {
+        e.preventDefault();
+        console.log('🔴 INPUT-LEVEL A KEY - Opening Alignment Modal');
+        setShowAlignmentModal(true);
+        return;
+      }
+      if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        console.log('🔴 INPUT-LEVEL P KEY - Opening Profile Modal');
+        setShowProfileModal(true);
+        return;
+      }
+    }
     
+    // 3. Standard input handling
     if (e.key === "Enter") {
       handleCommand(input);
     } else if (e.key === "ArrowUp") {

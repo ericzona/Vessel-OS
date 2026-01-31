@@ -243,10 +243,37 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
       addMessage(getAlignmentDescription(newAlignment.currentAlignment), true);
     }
 
+    // Handle Loot Locker choice - add items to inventory
+    let updatedInventory = gameState.inventory;
+    if (gameState.pendingChoice.id === "loot-locker-awakening") {
+      if (choice === "A") {
+        // SALVAGE RAGS - Add 3 basic items
+        updatedInventory = {
+          ...gameState.inventory,
+          items: [
+            ...gameState.inventory.items,
+            { id: "10-necklace", name: "Basic Necklace", type: "MATERIAL" as any, quantity: 1, description: "For identification" },
+            { id: "4-shirt", name: "Utility Shirt", type: "MATERIAL" as any, quantity: 1, description: "Stained but functional" },
+            { id: "5-pants", name: "Basic Pants", type: "MATERIAL" as any, quantity: 1, description: "Reinforced at the knees" },
+          ],
+        };
+      } else {
+        // DIG DEEPER - Add Aether-Leaf
+        updatedInventory = {
+          ...gameState.inventory,
+          items: [
+            ...gameState.inventory.items,
+            { id: "aether-leaf", name: "Aether-Leaf", type: "MATERIAL" as any, quantity: 1, description: "Bioluminescent botanical sample. Origin unknown." },
+          ],
+        };
+      }
+    }
+
     // Update game state
     onGameStateUpdate({
       ...gameState,
       alignment: newAlignment,
+      inventory: updatedInventory,
       pendingChoice: undefined,
     });
 
@@ -416,28 +443,47 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
         </div>
       )}
 
-      {/* Action Bar - Persistent UI Strip */}
+      {/* Action Bar - State-Swap: Normal or Choice Buttons */}
       <div className="border-t-2 border-terminal-dim bg-black p-2 px-4">
-        <div className="flex flex-col sm:flex-row gap-2 w-full">
-          <button
-            onClick={() => setShowInventoryModal(true)}
-            className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors h-11 px-3 text-sm font-bold"
-          >
-            [I] INVENTORY
-          </button>
-          <button
-            onClick={() => setShowProfileModal(true)}
-            className="flex-1 border border-terminal-bright text-terminal-bright hover:bg-terminal-bright hover:text-black transition-colors h-11 px-3 text-sm font-bold"
-          >
-            [P] PROFILE
-          </button>
-          <button
-            onClick={() => setShowAlignmentModal(true)}
-            className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors h-11 px-3 text-sm font-bold"
-          >
-            [A] ALIGNMENT
-          </button>
-        </div>
+        {gameState.pendingChoice ? (
+          /* CHOICE MODE: Show A/B buttons */
+          <div className="flex flex-col sm:flex-row gap-2 w-full">
+            <button
+              onClick={() => handleBinaryChoice('A')}
+              className="flex-1 border-2 border-terminal-bright text-terminal-bright hover:bg-terminal-bright hover:text-black transition-colors h-11 px-3 text-sm font-bold animate-pulse"
+            >
+              [A] {gameState.pendingChoice.optionA.text.toUpperCase()}
+            </button>
+            <button
+              onClick={() => handleBinaryChoice('B')}
+              className="flex-1 border-2 border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors h-11 px-3 text-sm font-bold animate-pulse"
+            >
+              [B] {gameState.pendingChoice.optionB.text.toUpperCase()}
+            </button>
+          </div>
+        ) : (
+          /* NORMAL MODE: Show I/P/A buttons */
+          <div className="flex flex-col sm:flex-row gap-2 w-full">
+            <button
+              onClick={() => setShowInventoryModal(true)}
+              className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors h-11 px-3 text-sm font-bold"
+            >
+              [I] INVENTORY
+            </button>
+            <button
+              onClick={() => setShowProfileModal(true)}
+              className="flex-1 border border-terminal-bright text-terminal-bright hover:bg-terminal-bright hover:text-black transition-colors h-11 px-3 text-sm font-bold"
+            >
+              [P] PROFILE
+            </button>
+            <button
+              onClick={() => setShowAlignmentModal(true)}
+              className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors h-11 px-3 text-sm font-bold"
+            >
+              [A] ALIGNMENT
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Input Area */}

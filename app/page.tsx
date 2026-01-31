@@ -60,6 +60,7 @@ export default function Home() {
       briggsConversations: 0,
       alignment: createInitialAlignmentState(),
       hasVisitedQuarters: false,
+      visitedLocations: [], // Track visited locations for narrative abstraction
     };
 
     setGameState(initialState);

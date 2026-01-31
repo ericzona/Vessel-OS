@@ -73,6 +73,7 @@ export interface GameState {
   alignment: import("@/types/alignment.types").AlignmentState; // 9-Point Alignment System (Identity Engine)
   pendingChoice?: BinaryChoice; // Current choice awaiting player decision
   hasVisitedQuarters?: boolean; // Track if player has been to quarters (for starter gear)
+  visitedLocations?: CompartmentId[]; // Track visited locations for narrative abstraction
 }
 
 export interface TimeDilatationState {

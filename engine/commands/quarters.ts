@@ -1,19 +1,19 @@
 /**
- * THE DRESSING ROOM Command
- * Phase 5.6: The Dressing Room - Home Building
+ * THE LOOT LOCKER Command
+ * INCREMENT 2: The Loot Locker - First Binary Choice
  * 
  * A space-time anomaly makes the room feel cavernous.
- * This is where Pioneers find gear and build their wardrobe.
+ * This is where Pioneers make their first alignment choice.
  */
 
-import { Command, CommandResult, CommandContext, CommandCategory } from "@/types/game.types";
+import { Command, CommandResult, CommandContext, CommandCategory, BinaryChoice } from "@/types/game.types";
 import { createBorderedTitle, createDivider } from "@/engine/ascii-border";
 
 export const QuartersCommand: Command = {
-  name: "dressing",
-  aliases: ["q", "quarters", "room", "wardrobe"],
-  description: "Enter The Dressing Room",
-  usage: "dressing",
+  name: "quarters",
+  aliases: ["q", "locker", "room"],
+  description: "Enter The Loot Locker",
+  usage: "quarters",
   category: CommandCategory.NAVIGATION,
 
   execute(args: string[], context: CommandContext): CommandResult {
@@ -22,94 +22,142 @@ export const QuartersCommand: Command = {
     const pioneerNumber = gameState.character.pioneerNumber;
     const lockStatus = `Room secured by Pioneer-${String(pioneerNumber).padStart(3, '0')}`;
     
-    // Check if first visit - grant starter gear
+    // Check if first visit - present binary choice
     const isFirstVisit = !gameState.hasVisitedQuarters;
-    let starterGearMessage = "";
-    const updates: any = {
-      currentLocation: "quarters" as any,
-      hasVisitedQuarters: true,
-    };
     
     if (isFirstVisit) {
-      // Grant starter gear on first visit
-      const starterItems = [
-        { id: "10-necklace", name: "Basic Necklace", type: "MATERIAL" as any, quantity: 1, description: "A simple chain. Functional, not decorative." },
-        { id: "4-shirt", name: "Utility Shirt", type: "MATERIAL" as any, quantity: 1, description: "Standard-issue crew shirt. Stained but serviceable." },
-        { id: "5-pants", name: "Basic Pants", type: "MATERIAL" as any, quantity: 1, description: "Cargo pants with reinforced knees." }
-      ];
-      
-      updates.inventory = {
-        items: [...gameState.inventory.items, ...starterItems],
-        maxSlots: gameState.inventory.maxSlots
+      // THE AWAKENING - First binary choice
+      const awakeningChoice: BinaryChoice = {
+        id: "loot-locker-awakening",
+        frameText: "The Awakening",
+        optionA: {
+          letter: "A",
+          text: "SALVAGE RAGS",
+          alignmentImpact: {
+            lawChaos: 5, // Lawful choice
+            goodEvil: 0,
+          },
+          resultText: `
+You kneel and inspect the pile of fabric.
+
+The rags are coarse but serviceable—remnants of crew uniforms 
+from the pre-Crash era. You recognize the pattern: Pioneer 
+standard-issue. Someone left these here intentionally.
+
+You gather what you need:
+  • [10-necklace] Basic Necklace - "For identification"
+  • [4-shirt] Utility Shirt - "Stained but functional"
+  • [5-pants] Basic Pants - "Reinforced at the knees"
+
+The practical choice. The safe choice.
+You are building a foundation.
+
+[Items added to inventory]
+          `.trim(),
+        },
+        optionB: {
+          letter: "B",
+          text: "DIG DEEPER",
+          alignmentImpact: {
+            lawChaos: -5, // Chaotic choice
+            goodEvil: 0,
+          },
+          resultText: `
+You push aside the rags and run your fingers along the floor seams.
+
+There—a hidden compartment. The magnetic seal releases with a hiss.
+Inside, wrapped in preservation film: a single luminous leaf.
+
+[Aether-Leaf] acquired.
+
+The ship's logs never mentioned botanical samples. This wasn't
+in the manifest. Someone hid this here before the Crash.
+
+The leaf pulses with bioluminescent energy. You pocket it quickly,
+glancing over your shoulder. Some discoveries are best kept secret.
+
+[Special item added to inventory]
+          `.trim(),
+        },
+        location: gameState.currentLocation,
       };
-      
-      starterGearMessage = `
 
-${createDivider()}
-
-🎁 STARTER GEAR MANIFESTED
-
-The ship's fabricator hums to life. Three items materialize on your workbench:
-
-  • [10-necklace] Basic Necklace
-  • [4-shirt] Utility Shirt  
-  • [5-pants] Basic Pants
-
-[Items added to inventory - type 'inventory' to view]
-
-${createDivider()}
-`;
-    }
-
-    const output = `
-${createBorderedTitle("THE DRESSING ROOM")}
+      const output = `
+${createBorderedTitle("THE LOOT LOCKER")}
 
 You step through the threshold and feel the shift—
 
-A space-time anomaly makes this room feel cavernous. The walls shimmer
-with possibility, as if reality itself is waiting for your command.
-This is your blank canvas in the void.
-
-The floor is polished obsidian, reflecting starlight from viewports that
-shouldn't exist. The ceiling stretches upward into impossible darkness.
-A workbench materializes along one wall. Empty shelves line another,
-eager to be filled with treasures from your journey.
-
-This is not just a room.
-This is the first step toward building something that lasts.
+The walls shimmer with an impossible depth. This room exists
+outside normal ship geometry. Quartermaster Briggs's voice
+echoes in your memory: "Resonant, stop flapping in the wind.
+Use the locker."
 
 ${createDivider()}
 
-🔒 DRESSING ROOM ACCESS
+THE AWAKENING
+
+A pile of fabric lies in the corner—tattered rags from the
+pre-Crash era. Standard-issue crew uniforms, left behind
+during the evacuation chaos.
+
+But something feels... off.
+
+The floor beneath the rags shows unusual wear patterns.
+Scuff marks. As if someone spent time here, digging.
+Searching for something hidden.
+
+${createDivider()}
+
+🔒 LOOT LOCKER ACCESS
+   ${lockStatus}
+   
+   This is your first test.
+   Choose wisely.
+
+${createDivider()}
+      `.trim();
+
+      return {
+        success: true,
+        message: output,
+        updates: {
+          currentLocation: "quarters" as any,
+          hasVisitedQuarters: true,
+        },
+        binaryChoice: awakeningChoice,
+      };
+    }
+
+    // Subsequent visits - normal quarters description
+    const output = `
+${createBorderedTitle("THE LOOT LOCKER")}
+
+Your personal quarters. The space-time anomaly makes the room
+feel larger than it should be.
+
+${createDivider()}
+
+🔒 LOOT LOCKER ACCESS
    ${lockStatus}
    
    Only you can modify this space.
-   Your creations persist across the journey.
 
 ${createDivider()}
 
 AVAILABLE ACTIONS:
-  • Type 'build' to access construction interface (COMING SOON)
-  • Type 'decorate' to personalize your space (COMING SOON)
-  • Type 'look' to examine your quarters more closely
+  • Type 'look' to examine your quarters
+  • Type 'inventory' to check your gear
   • Type 'leave' to return to the ship
 
 ${createDivider()}
-
-💡 WARP-LOGIC DETECTED
-   
-   "Time flows differently here. Resources gathered in the void
-   can be transformed into permanent structures. This is where
-   Pioneers become Architects."
-   
-   - Ship's AI, Fragment 2847-Q
-${starterGearMessage}
     `.trim();
 
     return {
       success: true,
       message: output,
-      updates,
+      updates: {
+        currentLocation: "quarters" as any,
+      },
     };
   },
 };

@@ -501,6 +501,28 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
               [LOCKER]
             </button>
           </div>
+        ) : gameState.currentLocation === "dojo" ? (
+          /* DOJO MODE: Show I/P/SPAR buttons */
+          <div className="flex flex-col sm:flex-row gap-2 w-full">
+            <button
+              onClick={() => setShowInventoryModal(true)}
+              className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors h-11 px-3 text-sm font-bold"
+            >
+              [I] INVENTORY
+            </button>
+            <button
+              onClick={() => setShowProfileModal(true)}
+              className="flex-1 border border-terminal-bright text-terminal-bright hover:bg-terminal-bright hover:text-black transition-colors h-11 px-3 text-sm font-bold"
+            >
+              [P] PROFILE
+            </button>
+            <button
+              onClick={() => handleCommand('spar')}
+              className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors h-11 px-3 text-sm font-bold"
+            >
+              [SPAR]
+            </button>
+          </div>
         ) : (
           /* NORMAL MODE: Show I/P/A buttons */
           <div className="flex flex-col sm:flex-row gap-2 w-full">

@@ -14,6 +14,7 @@ import { FeedbackCommand } from "./feedback";
 import { HelpCommand } from "./help";
 import { QuartersCommand } from "./quarters";
 import { LockerCommand } from "./locker";
+import { SparCommand } from "./spar";
 import { InspectCommand } from "./inspect";
 import { InventoryCommand } from "./inventory";
 
@@ -32,6 +33,7 @@ export const COMMAND_REGISTRY: Command[] = [
   HelpCommand,
   QuartersCommand,
   LockerCommand,
+  SparCommand,
   InspectCommand,
   InventoryCommand,
 ];

@@ -53,7 +53,7 @@ too far to reach in a single lifetime.
 
 The only active terminal displays a message loop:
 "AUTO-PILOT ENGAGED • ETA: [CALCULATING...] • WARNING: SUBJECTIVE TIME REQUIRED"`,
-    exits: ["cryo-bay"],
+    exits: ["cryo-bay", "rail"],
     lore: "The captain never made it to the pods. Their legacy is your burden.",
   },
 
@@ -112,14 +112,15 @@ This is your space in the void.`,
 
   dojo: {
     name: "Deck 04: Training Dojo",
-    description: `The Combat Sim-Space. Currently offline.
+    description: `The Combat Sim-Space. Holographic projectors hum with static.
 
 Empty training mats cover the floor. Weapon racks stand ready
-but unused. The holographic projectors are dark.
+but unused. In the center, a sparring dummy stands at attention—
+a biomechanical target designed to absorb impact.
 
-When operational, this is where Pioneers learn to survive.`,
+A terminal on the wall reads: "COMBAT DATA LOGGING: ACTIVE"`,
     exits: ["rail"],
-    lore: "Deck 04. The way of the warrior awaits power restoration.",
+    lore: "Deck 04. Where Pioneers sharpen their edge for the void ahead.",
   },
 };
 

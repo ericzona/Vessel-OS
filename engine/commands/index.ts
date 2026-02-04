@@ -13,6 +13,7 @@ import { TalkCommand } from "./talk";
 import { FeedbackCommand } from "./feedback";
 import { HelpCommand } from "./help";
 import { QuartersCommand } from "./quarters";
+import { LockerCommand } from "./locker";
 import { InspectCommand } from "./inspect";
 import { InventoryCommand } from "./inventory";
 
@@ -30,6 +31,7 @@ export const COMMAND_REGISTRY: Command[] = [
   FeedbackCommand,
   HelpCommand,
   QuartersCommand,
+  LockerCommand,
   InspectCommand,
   InventoryCommand,
 ];

@@ -1,87 +1,90 @@
 /**
- * MOVE Command
- * Navigate between ship compartments
- * Each movement costs 1 subjective time unit (the "Wait" mechanic)
+ * MOVE Command - Spatial Navigation System
+ * Navigate between ship compartments via the Vibe-Rail
  */
 
 import { Command, CommandResult, CommandContext, CommandCategory, CompartmentId } from "@/types/game.types";
+import { LookCommand } from "./look";
 
-// Compartment connections map
-const COMPARTMENT_EXITS: Record<CompartmentId, CompartmentId[]> = {
-  cryoBay: ["engineering", "bridge", "cargoHold"],
-  engineering: ["cryoBay", "cargoHold"],
-  bridge: ["cryoBay"],
-  cargoHold: ["cryoBay", "engineering"],
+// Vibe-Rail Navigation Map
+const MOVEMENT_MAP: Record<CompartmentId, Partial<Record<CompartmentId, boolean>>> = {
+  cryoBay: { bridge: true },
+  bridge: { cryoBay: true, rail: true },
+  rail: { bridge: true, silo: true, dojo: true },
+  silo: { rail: true, quarters: true },
+  quarters: { silo: true },
+  dojo: { rail: true },
+  engineering: {}, // Legacy - no connections yet
+  cargoHold: {}, // Legacy - no connections yet
 };
 
 const COMPARTMENT_NAMES: Record<CompartmentId, string> = {
-  cryoBay: "The Cryo-Bay",
+  cryoBay: "Cryo-Bay",
+  bridge: "Deck 01: Bridge",
+  rail: "The Vibe-Rail",
+  silo: "Deck 02: Slumber-Silo",
+  quarters: "Personal Quarters",
+  dojo: "Deck 04: Training Dojo",
   engineering: "Engineering Deck",
-  bridge: "Command Bridge",
   cargoHold: "Cargo Hold",
 };
 
 export const MoveCommand: Command = {
   name: "move",
-  aliases: ["go", "travel", "walk"],
-  description: "Move to a different compartment",
+  aliases: ["go", "travel", "walk", "take"],
+  description: "Navigate between ship locations",
   usage: "move <destination>",
   category: CommandCategory.NAVIGATION,
 
   execute(args: string[], context: CommandContext): CommandResult {
-    const { timeDilatation, gameState } = context;
-    
-    const MOVEMENT_COST = 1; // Subjective time units - the "Wait" mechanic
+    const { gameState } = context;
     
     if (args.length === 0) {
       const currentName = COMPARTMENT_NAMES[gameState.currentLocation];
-      const exits = COMPARTMENT_EXITS[gameState.currentLocation];
+      const exits = Object.keys(MOVEMENT_MAP[gameState.currentLocation] || {}) as CompartmentId[];
       const exitNames = exits.map(id => COMPARTMENT_NAMES[id]).join(", ");
       
       return {
         success: false,
-        message: `NAVIGATION ERROR
-
-Current location: ${currentName}
-Available destinations: ${exitNames}
-
-Usage: move <destination>
-Example: move engineering
-
-Movement cost: ${MOVEMENT_COST} subjective time unit
-(The ship is vast. Each step takes time.)`,
+        message: `Location: ${currentName}\nExits: ${exitNames || "None"}\n\nUsage: move <destination>`,
       };
     }
 
     // Parse destination
-    const destination = args[0].toLowerCase().replace(/[-\s]/g, "");
+    const input = args[0].toLowerCase().replace(/[-\s]/g, "");
     
-    // Map user input to compartment ID (includes single-letter shortcuts)
+    // Map user input to compartment ID
     const destinationMap: Record<string, CompartmentId> = {
       cryobay: "cryoBay",
       cryo: "cryoBay",
-      kryo: "cryoBay",
-      k: "cryoBay", // Shorthand (K for Kryo to avoid collision with Cargo)
-      engineering: "engineering",
-      engine: "engineering",
-      e: "engineering", // Shorthand
+      k: "cryoBay",
       bridge: "bridge",
       command: "bridge",
-      b: "bridge", // Shorthand
-      cargohold: "cargoHold",
-      cargo: "cargoHold",
-      hold: "cargoHold",
-      c: "cargoHold", // Shorthand (C for Cargo)
+      b: "bridge",
+      rail: "rail",
+      viberail: "rail",
+      lift: "rail",
+      v: "rail",
+      r: "rail",
+      silo: "silo",
+      slumbersilo: "silo",
+      deck2: "silo",
+      s: "silo",
+      quarters: "quarters",
+      room: "quarters",
+      q: "quarters",
+      dojo: "dojo",
+      training: "dojo",
+      deck4: "dojo",
+      d: "dojo",
     };
 
-    const targetId = destinationMap[destination];
+    const targetId = destinationMap[input];
     
     if (!targetId) {
       return {
         success: false,
-        message: `INVALID DESTINATION: '${args[0]}'
-
-Valid destinations: cryo-bay, engineering, bridge, cargo-hold`,
+        message: `Unknown destination: '${args[0]}'`,
       };
     }
 
@@ -89,65 +92,45 @@ Valid destinations: cryo-bay, engineering, bridge, cargo-hold`,
     if (targetId === gameState.currentLocation) {
       return {
         success: false,
-        message: `You are already here.
-
-Current location: ${COMPARTMENT_NAMES[gameState.currentLocation]}`,
+        message: `You are already here.`,
       };
     }
 
-    // Check if destination is accessible from current location
-    const validExits = COMPARTMENT_EXITS[gameState.currentLocation];
-    if (!validExits.includes(targetId)) {
+    // Check if destination is accessible (Spatial Reality)
+    const canMove = MOVEMENT_MAP[gameState.currentLocation]?.[targetId];
+    if (!canMove) {
       const currentName = COMPARTMENT_NAMES[gameState.currentLocation];
-      const targetName = COMPARTMENT_NAMES[targetId];
-      const exitNames = validExits.map(id => COMPARTMENT_NAMES[id]).join(", ");
+      const exits = Object.keys(MOVEMENT_MAP[gameState.currentLocation] || {}) as CompartmentId[];
+      const exitNames = exits.map(id => COMPARTMENT_NAMES[id]).join(", ");
       
       return {
         success: false,
-        message: `NAVIGATION ERROR
-
-Cannot reach ${targetName} from ${currentName}.
-Available destinations: ${exitNames}`,
+        message: `You can't go there from here.\n\nCurrent: ${currentName}\nAvailable exits: ${exitNames || "None"}`,
       };
     }
 
-    // Check subjective time cost
-    const timeState = timeDilatation.getState();
-    if (timeState.subjectiveTime < MOVEMENT_COST) {
-      return {
-        success: false,
-        message: `INSUFFICIENT SUBJECTIVE TIME
-
-Movement requires ${MOVEMENT_COST} unit of subjective time.
-Current: ${timeState.subjectiveTime.toFixed(1)} units
-
-Rest and wait for time to recharge.`,
-      };
-    }
-
-    // Deduct subjective time
-    const newSubjectiveTime = Math.max(0, timeState.subjectiveTime - MOVEMENT_COST);
-    timeDilatation.state = {
-      ...timeState,
-      subjectiveTime: newSubjectiveTime,
+    // Track visited locations for narrative abstraction
+    const visitedLocations = gameState.visitedLocations || [];
+    const isFirstVisit = !visitedLocations.includes(targetId);
+    
+    const updates: any = {
+      currentLocation: targetId,
     };
-
-    // Update current location in gameState
-    gameState.currentLocation = targetId;
+    
+    if (isFirstVisit) {
+      updates.visitedLocations = [...visitedLocations, targetId];
+    }
 
     const targetName = COMPARTMENT_NAMES[targetId];
     
+    // Auto-look on arrival - update game state first
+    const updatedGameState = { ...gameState, ...updates };
+    const lookResult = LookCommand.execute([], { ...context, gameState: updatedGameState }) as CommandResult;
+    
     return {
       success: true,
-      message: `NAVIGATION IN PROGRESS...
-
-⏱️  Subjective time consumed: ${MOVEMENT_COST} unit
-➤  Remaining: ${newSubjectiveTime.toFixed(1)} units
-
-✓  Arrived at: ${targetName}
-
-The ship feels endless. Each corridor stretches time itself.
-Type 'look' to examine your new surroundings.`,
+      message: `Moving to ${targetName}...\n\n${lookResult.message}`,
+      updates,
     };
   },
 };

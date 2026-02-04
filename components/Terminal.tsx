@@ -292,7 +292,25 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
       return;
     }
 
-    // 2. MODAL HOTKEYS: Only if input is empty (to allow typing commands)
+    // 2. CHOICE KEYS: If pendingChoice exists, A/B keys make choice
+    if (gameState.pendingChoice) {
+      if (e.key === 'a' || e.key === 'A') {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🔴 INPUT-LEVEL A KEY - Selecting Choice A');
+        handleBinaryChoice('A');
+        return;
+      }
+      if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🔴 INPUT-LEVEL B KEY - Selecting Choice B');
+        handleBinaryChoice('B');
+        return;
+      }
+    }
+
+    // 3. MODAL HOTKEYS: Only if input is empty (to allow typing commands)
     if (input === "") {
       if (e.key === 'i' || e.key === 'I') {
         e.preventDefault();
@@ -314,7 +332,7 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
       }
     }
     
-    // 3. Standard input handling
+    // 4. Standard input handling
     if (e.key === "Enter") {
       handleCommand(input);
     } else if (e.key === "ArrowUp") {
@@ -459,6 +477,28 @@ export default function Terminal({ gameState, onGameStateUpdate }: TerminalProps
               className="flex-1 border-2 border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors h-11 px-3 text-sm font-bold animate-pulse"
             >
               [B] {gameState.pendingChoice.optionB.text.toUpperCase()}
+            </button>
+          </div>
+        ) : gameState.currentLocation === "quarters" ? (
+          /* QUARTERS MODE: Show I/P/LOCKER buttons */
+          <div className="flex flex-col sm:flex-row gap-2 w-full">
+            <button
+              onClick={() => setShowInventoryModal(true)}
+              className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors h-11 px-3 text-sm font-bold"
+            >
+              [I] INVENTORY
+            </button>
+            <button
+              onClick={() => setShowProfileModal(true)}
+              className="flex-1 border border-terminal-bright text-terminal-bright hover:bg-terminal-bright hover:text-black transition-colors h-11 px-3 text-sm font-bold"
+            >
+              [P] PROFILE
+            </button>
+            <button
+              onClick={() => handleCommand('locker')}
+              className="flex-1 border border-terminal-text text-terminal-text hover:bg-terminal-text hover:text-black transition-colors h-11 px-3 text-sm font-bold"
+            >
+              [LOCKER]
             </button>
           </div>
         ) : (

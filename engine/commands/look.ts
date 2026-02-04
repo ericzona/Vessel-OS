@@ -71,6 +71,56 @@ blue oceans, twin moons. All of it lost now, light-years behind you.`,
     exits: ["cryo-bay", "engineering"],
     lore: "Lootopia fell. You carry its seeds to a new galaxy.",
   },
+
+  rail: {
+    name: "The Vibe-Rail",
+    description: `A vertical mag-lev shaft hums with potential energy. The spine of the ship.
+
+Magnetic rails glow faintly blue, running the length of the vessel.
+This is how Pioneers move between decks without wasting time.
+
+The shaft feels alive - vibrating with purpose. A neural interface
+whispers destinations in your mind.`,
+    exits: ["bridge", "silo", "dojo"],
+    lore: "The Vibe-Rail connects all decks. Fast travel, zero fuel.",
+  },
+
+  silo: {
+    name: "Deck 02: Slumber-Silo",
+    description: `Rows of personalized quarters line the curved walls.
+
+Each door bears a Pioneer number. Most are locked. Yours is marked
+with a soft green glow - the only active suite on this deck.
+
+The corridor is quiet. Too quiet. The other Pioneers sleep on
+in cryo, awaiting the new galaxy.`,
+    exits: ["rail", "quarters"],
+    lore: "Deck 02. Where Pioneers dream of home.",
+  },
+
+  quarters: {
+    name: "Personal Quarters",
+    description: `Your personal sanctuary. Larger than physics should allow.
+
+A standard crew bunk. A work desk. A storage locker against the wall.
+The room feels... private. Secure. Yours.
+
+This is your space in the void.`,
+    exits: ["silo"],
+    lore: "Every Pioneer needs a place to call home.",
+  },
+
+  dojo: {
+    name: "Deck 04: Training Dojo",
+    description: `The Combat Sim-Space. Currently offline.
+
+Empty training mats cover the floor. Weapon racks stand ready
+but unused. The holographic projectors are dark.
+
+When operational, this is where Pioneers learn to survive.`,
+    exits: ["rail"],
+    lore: "Deck 04. The way of the warrior awaits power restoration.",
+  },
 };
 
 type CompartmentKey = keyof typeof COMPARTMENTS;
@@ -85,8 +135,17 @@ export const LookCommand: Command = {
   execute(args: string[], context: CommandContext): CommandResult {
     const { gameState } = context;
     
-    const currentLocation = gameState.currentLocation as CompartmentKey;
-    const location = COMPARTMENTS[currentLocation];
+    try {
+      const currentLocation = gameState.currentLocation as CompartmentKey;
+      const location = COMPARTMENTS[currentLocation];
+      
+      // Safety check: If location data is missing, return fallback
+      if (!location) {
+        return {
+          success: true,
+          message: `Sector data corrupted. Navigation available.\n\nCurrent location: ${currentLocation}\n\nType 'move <destination>' to navigate.`,
+        };
+      }
 
     // Show NPCs in current location
     let npcPresence = "";
@@ -154,5 +213,14 @@ Use 'move <destination>' or shorthand (e.g., 'c' for Cargo) - Costs 1 subjective
       success: true,
       message: output,
     };
+    
+    } catch (error) {
+      // Safety fallback if anything breaks
+      console.error('Look command error:', error);
+      return {
+        success: true,
+        message: `Sector data corrupted. Navigation available.\n\nCurrent location: ${gameState.currentLocation}\n\nType 'move <destination>' to navigate.`,
+      };
+    }
   },
 };

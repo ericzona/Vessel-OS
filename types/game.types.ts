@@ -30,7 +30,7 @@ export interface LootItem {
   category: "clothing" | "accessory" | "badge" | "tool";
 }
 
-export type CompartmentId = "cryoBay" | "engineering" | "bridge" | "cargoHold" | "silo" | "quarters";
+export type CompartmentId = "cryoBay" | "engineering" | "bridge" | "cargoHold" | "silo" | "quarters" | "rail" | "dojo";
 
 export interface VendingMachine {
   id: string;
